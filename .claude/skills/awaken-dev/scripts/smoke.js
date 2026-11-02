@@ -15,7 +15,12 @@ const TABS = ['status', 'quests', 'train', 'plan', 'records'];
 
 const wait = ms => new Promise(r => setTimeout(r, ms));
 
+// sw.js VERSION and app.js APP_VERSION must match, or the "Update ready" prompt misfires.
+const swV = (fs.readFileSync(path.join(root, 'sw.js'), 'utf8').match(/const VERSION = '([^']+)'/) || [])[1];
+const appV = (fs.readFileSync(path.join(root, 'app.js'), 'utf8').match(/const APP_VERSION = '([^']+)'/) || [])[1];
+
 (async () => {
+  if (!swV || swV !== appV) { console.error(`FAIL\nsw.js VERSION (${swV}) and app.js APP_VERSION (${appV}) differ`); process.exit(1); }
   const server = spawn('python3', ['-m', 'http.server', String(port), '--bind', '127.0.0.1'], { cwd: root, stdio: 'ignore' });
   const errors = [];
   let browser;

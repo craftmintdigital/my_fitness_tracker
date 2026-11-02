@@ -78,6 +78,8 @@ The app is static files, so any static host works. The easiest option is **GitHu
 - **iPhone (Safari):** Share → *Add to Home Screen*
 - **Android (Chrome):** ⋮ → *Install app*
 
+**Updates:** when a new version is published, the app shows **Update ready** under the top bar the next time you open it (or come back to it). Tap **Reload** to switch; a workout in progress is saved first. If you opened the app fresh and already have the new version, you won't be asked. The very first update after installing this version may still need one full close and reopen.
+
 Local test: `python3 -m http.server` then open http://localhost:8000.
 
 ## Cloud sync (optional): secret GitHub Gist

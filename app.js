@@ -1628,8 +1628,54 @@ Bike Intervals | 1 | 10x30s | — | hard | warm up first | cardio`;
   let lastDay = dkey();
   setInterval(() => { if (dkey() !== lastDay) { lastDay = dkey(); questDate = lastDay; render(); checkProgressEvents(); } }, 60000);
 
+  // ------------------------------------------------------------------ updates
+  // Must equal VERSION in sw.js (the smoke test checks). A waiting service worker with a different
+  // version means this page is running old code, so offer a reload. Same version means the page
+  // already loaded the new files (network-first), so the new worker just takes over quietly.
+  const APP_VERSION = 'awaken-v8';
+  let reloadOnTakeover = false;
+  function workerVersion(w) {
+    return new Promise(resolve => {
+      const ch = new MessageChannel();
+      const t = setTimeout(() => resolve(null), 2000);
+      ch.port1.onmessage = e => { clearTimeout(t); resolve(e.data); };
+      try { w.postMessage({ type: 'version' }, [ch.port2]); } catch { clearTimeout(t); resolve(null); }
+    });
+  }
+  async function onWaiting(w) {
+    const v = await workerVersion(w);
+    if (v && v === APP_VERSION) { w.postMessage({ type: 'skip' }); return; }
+    showUpdateBar(w);
+  }
+  function showUpdateBar(w) {
+    if (document.getElementById('updateBar')) return;
+    const el = document.createElement('div');
+    el.id = 'updateBar'; el.className = 'update-bar'; el.setAttribute('role', 'status');
+    el.innerHTML = `<span><b>Update ready.</b> ${S.draft ? 'Your workout in progress is saved.' : 'Reload to get the latest version.'}</span>
+      <button class="btn sm primary" data-u="reload">Reload</button><button class="btn sm ghost" data-u="later" aria-label="Not now">Later</button>`;
+    el.addEventListener('click', e => {
+      const b = e.target.closest('[data-u]'); if (!b) return;
+      if (b.dataset.u === 'later') { el.remove(); return; }
+      save(false);
+      reloadOnTakeover = true;
+      w.postMessage({ type: 'skip' });
+      setTimeout(() => location.reload(), 3000); // fallback if the takeover event never arrives
+    });
+    document.querySelector('.topbar').after(el);
+  }
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
+    navigator.serviceWorker.addEventListener('controllerchange', () => { if (reloadOnTakeover) { reloadOnTakeover = false; location.reload(); } });
+    navigator.serviceWorker.register('sw.js').then(reg => {
+      if (reg.waiting && navigator.serviceWorker.controller) onWaiting(reg.waiting);
+      reg.addEventListener('updatefound', () => {
+        const w = reg.installing; if (!w) return;
+        w.addEventListener('statechange', () => { if (w.state === 'installed' && navigator.serviceWorker.controller) onWaiting(w); });
+      });
+      // iOS resumes home-screen apps from memory, so check for a new version whenever the app comes back.
+      const check = () => reg.update().catch(() => {});
+      document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') check(); });
+      setInterval(check, 30 * 60000);
+    }).catch(() => {});
   }
 
   render();

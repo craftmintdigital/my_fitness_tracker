@@ -334,6 +334,15 @@ main.enter-back { animation: pageInBack 0.26s cubic-bezier(.2, .8, .2, 1); }
 @keyframes pageInFwd { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
 @keyframes pageInBack { from { opacity: 0; transform: translateX(-24px); } to { opacity: 1; transform: none; } }
 
+/* ---------- update prompt ---------- */
+.update-bar {
+  position: sticky; top: calc(56px + env(safe-area-inset-top)); z-index: 9; margin: 0 auto; max-width: 640px;
+  display: flex; align-items: center; gap: 8px; padding: 8px 8px 8px 16px;
+  background: var(--slate-2); border-bottom: 1px solid var(--signal-line); font-size: var(--s-13);
+  animation: fadeIn 0.2s ease-out;
+}
+.update-bar span { flex: 1; }
+
 /* ---------- rest timer ---------- */
 .rest-pill {
   position: fixed; left: 50%; bottom: calc(68px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 30;
@@ -353,7 +362,7 @@ body:has(.rest-pill:not([hidden])) .toast { bottom: calc(140px + env(safe-area-i
 body:has(.rest-pill:not([hidden])) { padding-bottom: calc(140px + env(safe-area-inset-bottom)); }
 
 @media (prefers-reduced-motion: reduce) {
-  .modal, .toast, .modal-wrap, .rest-pill, .rest-pill.out, main.enter-fwd, main.enter-back,
+  .modal, .toast, .modal-wrap, .update-bar, .rest-pill, .rest-pill.out, main.enter-fwd, main.enter-back,
   .modal.clear .modal-body > *, .modal.clear .modal-actions, .modal.clear .rank-badge.pulse, .quest.pop .check { animation: none; }
   .bar > i, .tabs button::before, .tabs .ico, .btn, .rest-fill, .check, .chip, .stats-wrap > summary::before { transition: none; }
   .btn:active, .day-pick:active { transform: none; }

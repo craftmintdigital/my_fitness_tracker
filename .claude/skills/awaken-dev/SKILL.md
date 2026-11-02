@@ -17,7 +17,7 @@ AWAKEN is a static, offline-first PWA. There is no framework, bundler, package.j
 
 ## Rules when changing the app
 
-1. **Bump the cache version.** Whenever a shipped file changes, bump `VERSION` in `sw.js` (`awaken-vN` → `awaken-vN+1`). If you add a new shipped file, also add it to `FILES` there.
+1. **Bump the version in two places.** Whenever a shipped file changes, bump `VERSION` in `sw.js` (`awaken-vN` → `awaken-vN+1`) **and** `APP_VERSION` in `app.js` to the same value. The app compares them to decide whether to show "Update ready", and the smoke test fails if they differ. If you add a new shipped file, also add it to `FILES` in `sw.js`.
 2. **Don't break existing saves.** The whole save is one JSON object in `localStorage['awaken.save.v1']`, which is also what goes in `.txt` backups and in `awaken_save.json` in the gist. New fields need defaults for saves that don't have them yet. Never rename or drop fields without a migration. XP and stats are recomputed from logs each time, so never store derived totals.
 3. **Keep the token out of saves.** The Gist sync config, including the token, lives in a separate localStorage key so it never ends up in a backup or the gist. Keep it that way.
 4. **Escape user text.** Views are template strings. Pass anything user-entered through `esc()` before it goes into HTML.
