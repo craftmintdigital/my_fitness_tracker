@@ -79,6 +79,7 @@ h2.section { font-family: var(--mono); font-size: 13px; letter-spacing: 3px; col
 .red { color: var(--red); }
 .green { color: var(--green); }
 .violet { color: var(--violet); }
+.cyan { color: var(--cyan); }
 .center { text-align: center; }
 .row { display: flex; gap: 8px; align-items: center; }
 .row.wrap { flex-wrap: wrap; }

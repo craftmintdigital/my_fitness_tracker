@@ -16,12 +16,27 @@ A fitness tracker for your 6-week training and nutrition block that works like a
 
 XP and stats are worked out again from your logs every time, so editing or deleting a workout never double-counts.
 
+## Built-in plan: Hybrid Athlete Block 1 (bodyweight only, no gym)
+| Day | Mission |
+|---|---|
+| Mon | Upper A: push focus (push-ups, table rows, pike push-ups, dips) |
+| Tue | Easy run + runner armour (calves, tibialis, core) |
+| Wed | Lower: Bulgarian split squats, single-leg RDL, sliding leg curls, step-ups, pogo hops |
+| Thu | Upper B: pull focus (rows, backpack rows/curls, close-grip & decline push-ups) |
+| Fri | **Hybrid Mission**: 400 m run + station rounds, logged for time (4 → 8 rounds) |
+| Sat | Long easy run (35 → 50 min, week 6 = 5K time trial) |
+| Sun | Active recovery: walk + mobility (rest-day quest) |
+
+Daily step target ramps 7,000 → 8,500 → 10,000.
+
 ## 6-week progression (applied automatically in Plan & Train)
-1. Baseline · 2. +1 rep · 3. +2.5–5% load · 4. Deload (−1 set, ~10% lighter) · 5. Volume (+1 set) · 6. Performance
+1. Baseline · 2. +1 rep · 3. Harder variation / +backpack load · 4. Deload (−1 set, stop 3–4 reps short) · 5. Volume (+1 set) · 6. Performance
+
+Runs use their own week-by-week targets. Bodyweight sets: leave the kg field blank (BW). Bodyweight PRs = most reps in a set.
 
 ## Coaching workflow
 1. **Status → Profile**: fill it in, then **Share profile .txt**. That creates `user_fitness_profile.txt`; add it to your Claude Project Knowledge.
-2. Ask the coach for your plan in this format, then use **Plan → Edit → Import from text**:
+2. Profile → **Paste / import profile** loads a coach-written `user_fitness_profile.txt` (including targets). To swap plans, ask the coach for this format and use **Plan → Edit → Import from text** (`weeks:a/b/c…` sets per-week targets):
    ```
    # Day 1 – Lower Body Strength
    Back Squat | 4 | 5 | 3 min | RPE 7 | brace hard

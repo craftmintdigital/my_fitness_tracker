@@ -23,54 +23,71 @@
   const round25 = w => Math.round(w / 2.5) * 2.5;
   const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const fmtDate = k => { const d = parseKey(k); return `${WEEKDAYS[d.getDay()]} ${d.getDate()} ${d.toLocaleString('en', { month: 'short' })}`; };
-  const e1rm = (w, r) => (w > 0 && r > 0 && r <= 12) ? w * (1 + r / 30) : 0;
+  const e1rm = (w, r) => (w > 0 && r > 0 && r <= 30) ? w * (1 + r / 30) : 0;
+  const fmtW = w => (num(w) > 0 ? `${num(w)}kg` : 'BW');
 
   // ------------------------------------------------------------------ default data
-  const ex = (name, sets, reps, rest, load, notes = '', type = 'strength') => ({ name, sets, reps, rest, load, notes, type });
+  const ex = (name, sets, reps, rest, load, notes = '', type = 'strength', weeks) => ({ name, sets, reps, rest, load, notes, type, ...(weeks ? { weeks } : {}) });
+  const run = (name, weeks, load, notes) => ex(name, 1, weeks[0], '—', load, notes, 'cardio', weeks);
 
+  // Hybrid athlete block: bodyweight-only hypertrophy + aerobic base for future marathon / HYROX-style racing.
+  // 6 training days (Mon–Sat) + Sunday active recovery. dow = weekday (0 Sun … 6 Sat).
+  const OLD_STARTER_NOTE = 'Starter template.';
   const DEFAULT_PROGRAM = {
-    note: 'Starter template. Paste your profile into Claude, then replace this with the coach\'s personalised 6-week plan (Plan → Edit).',
+    id: 'hybrid-bw-v1',
+    note: 'Hybrid Athlete Block 1 (bodyweight, no gym). Strength sets end 1–3 reps short of failure (RIR 1–3). When you beat the top of a rep range on every set, move to the next variation or add backpack load (books / water bottles). Easy runs = conversational pace, RPE 3–4/10 — if you can\'t speak in sentences, slow down or walk. Sunday = active recovery (walk + mobility).',
+    steps: [7000, 7000, 8500, 8500, 10000, 10000],
     days: [
-      { name: 'Day 1 – Lower Body Strength', exercises: [
-        ex('Back Squat', 4, '5', '3 min', 'RPE 7 (2–3 reps in reserve)', 'Brace, controlled descent, full depth you own.'),
-        ex('Romanian Deadlift', 3, '8', '2 min', 'RPE 7', 'Hips back, neutral spine. Stop if lower back takes over.'),
-        ex('Walking Lunge', 3, '10/leg', '90 s', 'Moderate DBs', 'Long stride, knee tracks over toes.'),
-        ex('Lying Leg Curl', 3, '12', '60 s', 'RPE 8', 'Slow 3 s lowering.'),
-        ex('Plank', 3, '45s', '60 s', 'Bodyweight', 'Ribs down, squeeze glutes.'),
+      { dow: 1, name: 'Mon – Upper A: Push Protocol', exercises: [
+        ex('Push-up', 4, '8–15', '90 s', 'RIR 1–2', 'Ladder: incline → standard → feet-elevated → deficit (hands on books) → archer.'),
+        ex('Inverted Table Row', 4, '8–12', '90 s', 'RIR 1–2', 'Lie under a sturdy table, grip edge, body straight. Ladder: knees bent → legs straight → feet on chair → backpack on chest.'),
+        ex('Pike Push-up', 3, '6–12', '90 s', 'RIR 2', 'Hips high, head to a spot in front of hands. Harder: feet on a chair.'),
+        ex('Chair Dip', 3, '8–15', '90 s', 'RIR 2', 'Two sturdy chairs or bed edge. Stop if front of shoulder hurts.'),
+        ex('Towel Door Row', 3, '12–15', '60 s', 'RIR 1–2', 'Towel round a door handle (door closed, you on the hinge side). Squeeze shoulder blades.'),
+        ex('Hollow Body Hold', 3, '20s', '45 s', 'Bodyweight', 'Low back glued to floor. Bend knees if it lifts.'),
       ]},
-      { name: 'Day 2 – Upper Body Strength', exercises: [
-        ex('Bench Press', 4, '5', '3 min', 'RPE 7', 'Shoulder blades pinned, feet planted.'),
-        ex('Barbell Row', 4, '6', '2 min', 'RPE 7', 'Torso ~45°, pull to lower ribs.'),
-        ex('Overhead Press', 3, '8', '2 min', 'RPE 7', 'Glutes tight, no lower-back arch.'),
-        ex('Pull-up / Lat Pulldown', 3, '10', '90 s', 'RPE 8', 'Full hang to chest-to-bar range.'),
-        ex('Face Pull', 3, '15', '60 s', 'Light', 'Shoulder health — external rotate at the end.'),
+      { dow: 2, name: 'Tue – Easy Run + Runner Armour', exercises: [
+        run('Easy Run (Zone 2)', ['25 min (run 4 / walk 1)', '30 min (run 5 / walk 1)', '30 min continuous', '25 min easy', '35 min + 4×20s strides', '40 min + 6×20s strides'], 'RPE 3–4, conversational', 'Soft surface if possible. Strides = smooth fast 20s, full walk-back recovery.'),
+        ex('Single-leg Calf Raise', 3, '12–20', '45 s', 'Bodyweight → backpack', 'On a stair edge, full stretch at bottom, 2 s pause at top. Shin & Achilles insurance.'),
+        ex('Tibialis Raise', 2, '20', '45 s', 'Bodyweight', 'Back against wall, heels ~30 cm out, lift toes.'),
+        ex('Side Plank', 3, '30s', '30 s', 'Each side', 'Hips high, straight line.'),
+        ex('Dead Bug', 3, '8', '45 s', 'Each side', 'Slow. Exhale fully, low back stays down.'),
       ]},
-      { name: 'Day 3 – Conditioning', exercises: [
-        ex('Bike / Row Intervals', 1, '10 x (30s hard / 90s easy)', '—', 'Hard = 8/10 effort', 'Warm up 5 min first.', 'cardio'),
-        ex('Kettlebell Swing', 4, '15', '60 s', 'Moderate KB', 'Hip hinge, not a squat. Snap the hips.'),
-        ex('Farmer Carry', 4, '40m', '60 s', 'Heavy DBs', 'Tall posture, slow steps.'),
+      { dow: 3, name: 'Wed – Lower: Leg Day Protocol', exercises: [
+        ex('Bulgarian Split Squat', 4, '8–12', '90 s', 'RIR 1–2 (backpack when >15 reps)', 'Rear foot on bed/chair. Reps are per leg. Torso slightly forward = more glutes.'),
+        ex('Single-leg RDL', 3, '10–12', '75 s', 'Backpack in opposite hand', 'Per leg. Hips square, soft knee, feel the hamstring.'),
+        ex('Sliding Leg Curl', 3, '8–12', '75 s', 'RIR 1–2', 'Socks on tiles / towel. Bridge up, slide heels out & back. Harder: single leg.'),
+        ex('Step-up', 3, '10', '60 s', 'Backpack', 'Per leg. Knee-height chair/stair, drive through the front heel, no push-off from back leg.'),
+        ex('Pogo Hops', 3, '20', '60 s', 'Bodyweight', 'Small, quick, stiff ankles. Tendon prep for running. Skip if shins are sore.'),
+        ex('Single-leg Glute Bridge', 3, '12', '45 s', 'Each side', '2 s squeeze at top.'),
       ]},
-      { name: 'Day 4 – Full Body Hypertrophy', exercises: [
-        ex('Trap Bar Deadlift', 3, '8', '2 min', 'RPE 7', 'Push the floor away.'),
-        ex('Incline DB Press', 3, '10', '90 s', 'RPE 8', 'Control the stretch.'),
-        ex('Leg Press', 3, '12', '90 s', 'RPE 8', 'Don\'t let hips roll off the pad.'),
-        ex('Seated Cable Row', 3, '12', '90 s', 'RPE 8', 'Pause 1 s at the squeeze.'),
-        ex('DB Lateral Raise', 3, '15', '60 s', 'Light', 'Lead with elbows.'),
-        ex('Hanging Knee Raise', 3, '12', '60 s', 'Bodyweight', 'No swinging.'),
+      { dow: 4, name: 'Thu – Upper B: Pull Protocol', exercises: [
+        ex('Inverted Table Row', 4, '8–12', '90 s', 'RIR 1 (harder variation than Mon)', 'Feet elevated or backpack on chest once 12 reps is easy.'),
+        ex('Close-grip Push-up', 4, '8–15', '90 s', 'RIR 1–2', 'Hands under shoulders, elbows brush ribs — triceps focus.'),
+        ex('Backpack Bent-over Row', 3, '10–15', '75 s', 'Loaded backpack', 'Hinge to ~45°, pull bag to belly button.'),
+        ex('Decline Push-up', 3, '8–15', '75 s', 'RIR 1–2', 'Feet on chair — upper chest & shoulders.'),
+        ex('Backpack Curl', 3, '12–15', '60 s', 'Loaded backpack', 'Hold by the top handle/straps, slow lowering.'),
+        ex('Prone Y-T-W Raise', 2, '10', '45 s', 'Bodyweight', 'Each letter. Thumbs up, squeeze upper back. Posture & shoulder health.'),
       ]},
-      { name: 'Day 5 – Optional Activity', exercises: [
-        ex('Zone 2 Walk / Ride / Sport', 1, '30–45 min', '—', 'Can hold a conversation', 'Anything you enjoy. Recovery, not punishment.', 'cardio'),
+      { dow: 5, name: 'Fri – HYBRID MISSION (race sim)', exercises: [
+        run('Mission Circuit', ['4 rounds', '5 rounds', '6 rounds', '4 rounds (easy)', '7 rounds', '8 rounds — FOR TIME'], 'Steady, RPE 6–7 (Wk6 race effort)',
+          'Each round = 400m run (~2–3 min) + next station in order: 1) 10 burpee broad jumps 2) 20 walking lunges (backpack) 3) 30 m bear crawl 4) 15 push-ups 5) 15 backpack squat-to-press 6) 20 mountain climbers/side 7) 60 s backpack carry 8) 20 sit-ups. Log TOTAL minutes — beat it next week.'),
+        ex('Plank', 2, '45s', '45 s', 'Bodyweight', 'Cool-down core. Then 5 min walk.'),
+      ]},
+      { dow: 6, name: 'Sat – Long Run (Endurance Raid)', exercises: [
+        run('Long Easy Run', ['35 min run/walk', '40 min run/walk', '45 min easy', '35 min easy', '50 min easy', '5K TIME TRIAL + 15 min easy'], 'RPE 3–4 (Wk6 trial: hard but even)', 'Slow enough to talk. Water + pinch of salt + lemon after. Walk breaks are allowed, not failure.'),
+        ex('Single-leg Calf Raise', 2, '15–20', '45 s', 'Bodyweight', 'Post-run.'),
       ]},
     ],
   };
 
   const WEEK_FOCUS = [
-    { t: 'Baseline', d: 'Find working weights at the target RPE. Log everything honestly.' },
-    { t: '+1 Rep', d: 'Same loads as Week 1, add 1 rep to every set.' },
-    { t: '+Load', d: 'Back to base reps, add 2.5–5% load on main lifts.' },
-    { t: 'Deload', d: 'One fewer set, ~10% lighter. Technique focus. Recover.' },
-    { t: 'Volume', d: '+1 set on every strength exercise, Week 3 loads.' },
-    { t: 'Performance', d: 'Base sets. Beat your Week 3 numbers — PR attempts on the first lift if you feel good.' },
+    { t: 'Baseline', d: 'Find your level: pick the variation that hits the rep range at RIR 2. Runs are run/walk — keep them easy.' },
+    { t: '+1 Rep', d: 'Same variations as Week 1, add 1 rep to every set. Runs get 5 min longer.' },
+    { t: '+Load', d: 'Harder variation or add backpack weight. First continuous runs.' },
+    { t: 'Deload', d: 'One fewer set, stop 3–4 reps short of failure, shorter runs. Recover and absorb.' },
+    { t: 'Volume', d: '+1 set on every strength exercise. Longest runs so far + strides.' },
+    { t: 'Performance', d: 'Beat Week 3 on every lift. Fri: 8-round mission for time. Sat: 5K time trial.' },
   ];
 
   const RANKS = [
@@ -103,8 +120,8 @@
       notes: '',
     },
     startDate: dkey(),
-    trainingDays: [1, 2, 4, 5], // Mon Tue Thu Fri
-    targets: { steps: 8000, protein: 140, water: 3, sleep: 7, fibre: 30, calories: 0 },
+    trainingDays: [1, 2, 3, 4, 5, 6], // Mon–Sat, Sunday = active recovery
+    targets: { steps: 7000, protein: 150, water: 3.5, sleep: 8, fibre: 35, calories: 3200 },
     days: {},
     workouts: [],
     program: JSON.parse(JSON.stringify(DEFAULT_PROGRAM)),
@@ -132,7 +149,15 @@
   }
   function migrate(s) {
     const b = blankState();
-    return { ...b, ...s, profile: { ...b.profile, ...(s.profile || {}) }, targets: { ...b.targets, ...(s.targets || {}) } };
+    const out = { ...b, ...s, profile: { ...b.profile, ...(s.profile || {}) }, targets: { ...b.targets, ...(s.targets || {}) } };
+    // Upgrade saves still on the old generic starter template to the personalised hybrid block.
+    if (!out.program || String(out.program.note || '').startsWith(OLD_STARTER_NOTE)) {
+      out.program = JSON.parse(JSON.stringify(DEFAULT_PROGRAM));
+      if (JSON.stringify(out.trainingDays) === '[1,2,4,5]') out.trainingDays = b.trainingDays;
+      const oldT = { steps: 8000, protein: 140, water: 3, sleep: 7, fibre: 30, calories: 0 };
+      Object.keys(oldT).forEach(k => { if (out.targets[k] === oldT[k]) out.targets[k] = b.targets[k]; });
+    }
+    return out;
   }
   function save() {
     try { localStorage.setItem(STORE_KEY, JSON.stringify(S)); }
@@ -153,7 +178,7 @@
     const d = S.days[k] || {};
     const T = S.targets;
     const q = [
-      { id: 'steps', label: 'Walk', unit: 'steps', target: T.steps, value: num(d.steps), stat: 'AGI', input: true, step: 500 },
+      { id: 'steps', label: 'Walk', unit: 'steps', target: stepTarget(k), value: num(d.steps), stat: 'AGI', input: true, step: 500 },
       { id: 'protein', label: 'Protein', unit: 'g', target: T.protein, value: num(d.protein), stat: 'VIT', input: true, step: 5 },
       { id: 'fibre', label: 'Fibre', unit: 'g', target: T.fibre, value: num(d.fibre), stat: 'VIT', input: true, step: 1 },
       { id: 'water', label: 'Water', unit: 'L', target: T.water, value: num(d.water), stat: 'VIT', input: true, step: 0.25 },
@@ -166,6 +191,12 @@
     }
     q.forEach(x => { x.done = x.target > 0 && x.value >= x.target; });
     return q;
+  }
+  function stepTarget(k) {
+    const ramp = S.program && S.program.steps;
+    const wk = programWeek(k);
+    if (Array.isArray(ramp) && ramp.length && wk >= 1) return ramp[Math.min(wk, ramp.length) - 1];
+    return S.targets.steps;
   }
   const dayCleared = k => questsFor(k).every(q => q.done);
 
@@ -205,17 +236,20 @@
         const key = e.name.trim().toLowerCase();
         if (!key) return;
         if (e.type === 'cardio') { minutes += num(e.min); return; }
-        let top = null;
+        // Loaded sets score by estimated 1RM; bodyweight sets score by max reps (tracked separately).
+        const tops = {};
         (e.sets || []).forEach(s => {
           const W = num(s.w), R = num(s.r);
           if (R > 0) sets++;
-          const v = e1rm(W, R);
-          if (v && (!top || v > top.e1rm)) top = { e1rm: v, w: W, r: R, date: w.date };
+          const bw = W <= 0;
+          const v = bw ? R : e1rm(W, R);
+          const k2 = key + (bw ? '|bw' : '');
+          if (v && (!tops[k2] || v > tops[k2].score)) tops[k2] = { score: v, w: W, r: R, bw, date: w.date };
         });
-        if (top) {
-          if (best[key] && top.e1rm > best[key].e1rm + 0.01) { prs.push(e.name); x += 25; }
-          if (!best[key] || top.e1rm > best[key].e1rm) best[key] = { ...top, name: e.name };
-        }
+        Object.entries(tops).forEach(([k2, top]) => {
+          if (best[k2] && top.score > best[k2].score + 0.01 && !prs.includes(e.name)) { prs.push(e.name); x += 25; }
+          if (!best[k2] || top.score > best[k2].score) best[k2] = { ...top, name: e.name };
+        });
       });
       x += sets * 3 + Math.round(minutes * 0.8);
       if (w.energy || w.difficulty) x += 10; // reflection bonus
@@ -248,17 +282,27 @@
     let sets = num(e.sets) || 1;
     let reps = String(e.reps || '');
     let load = e.load || '';
+    const add = t => { load = load ? `${load} · ${t}` : t; };
+    const perWeek = Array.isArray(e.weeks) && e.weeks[wk - 1];
+    if (perWeek) reps = perWeek;
     if (e.type === 'strength') {
-      const m = reps.match(/^(\d+)(.*)$/);
-      if (wk === 2 && m && !/s$/i.test(m[2])) reps = (parseInt(m[1], 10) + 1) + m[2];
-      if (wk === 4) { sets = Math.max(2, sets - 1); load = (load ? load + ' · ' : '') + '~10% lighter'; }
+      if (wk === 2 && !perWeek) reps = bumpReps(reps);
+      if (wk === 3) add('harder variation or +backpack load');
+      if (wk === 4) { sets = Math.max(2, sets - 1); add('easier: stop 3–4 reps short'); }
       if (wk === 5) sets += 1;
-      if (wk === 3) load = (load ? load + ' · ' : '') + '+2.5–5% vs Wk2';
-      if (wk === 6) load = (load ? load + ' · ' : '') + 'beat Wk3';
-    } else if (wk === 4) {
-      load = (load ? load + ' · ' : '') + 'easier, shorter';
+      if (wk === 6) add('beat Wk3');
+    } else if (wk === 4 && !perWeek) {
+      add('easier, shorter');
     }
     return { ...e, sets, reps, load };
+  }
+
+  /** +1 rep (or +5 s for timed holds), handling ranges like "8–12". */
+  function bumpReps(reps) {
+    const m = String(reps).match(/^(\d+)(?:\s*[-–]\s*(\d+))?(.*)$/);
+    if (!m) return reps;
+    const inc = /^s\b|^s$|^\s*sec/i.test(m[3].trim()) ? 5 : 1;
+    return (+m[1] + inc) + (m[2] ? '–' + (+m[2] + inc) : '') + m[3];
   }
 
   function lastPerformance(name, beforeDate = '9999') {
@@ -276,6 +320,10 @@
     const sets = (last.e.sets || []).filter(s => num(s.r) > 0);
     if (!sets.length) return '';
     const top = sets.reduce((a, b) => (num(b.w) > num(a.w) ? b : a));
+    if (num(top.w) <= 0) {
+      const wk0 = programWeek();
+      return `Last: BW × ${sets.map(s => num(s.r)).join('/')} → ${wk0 === 4 ? 'deload: stop 3–4 reps short' : wk0 === 3 || wk0 === 6 ? 'harder variation or add backpack' : 'beat it by 1 rep per set'}`;
+    }
     const allHit = sets.every(s => num(s.w) >= num(top.w));
     const wk = programWeek();
     let hint = `Last: ${num(top.w)}kg × ${sets.map(s => num(s.r)).join('/')}`;
@@ -296,7 +344,7 @@
       if (e.type === 'cardio') {
         lines.push(`${num(e.min) || '?'} min${e.dist ? ` · ${e.dist} km` : ''}`);
       } else {
-        (e.sets || []).filter(s => s.r !== '' || s.w !== '').forEach(s => lines.push(`${num(s.w)}kg x ${num(s.r)}`));
+        (e.sets || []).filter(s => s.r !== '' || s.w !== '').forEach(s => lines.push(`${fmtW(s.w)} x ${num(s.r)}`));
       }
       if (e.note) lines.push(`(${e.note})`);
       lines.push('');
@@ -409,11 +457,14 @@ ${p.notes}
     L.push('----------------------------------------');
     L.push('');
     L.push('BEST LIFTS (estimated 1RM, Epley)');
-    Object.values(D.best).sort((a, b) => b.e1rm - a.e1rm).forEach(b => L.push(`${b.name}: ${b.w}kg x ${b.r} (e1RM ${b.e1rm.toFixed(1)}kg, ${b.date})`));
+    L.push('(loaded = estimated 1RM, Epley · BW = max reps in a set)');
+    sortBests(D.best).forEach(b => L.push(b.bw ? `${b.name}: BW x ${b.r} (${b.date})` : `${b.name}: ${b.w}kg x ${b.r} (e1RM ${b.score.toFixed(1)}kg, ${b.date})`));
     L.push('');
     L.push('Coach: please review progress, fatigue and pain signals, ask your reflection questions, and adjust next week.');
     return L.join('\n') + '\n';
   }
+
+  const sortBests = best => Object.values(best).sort((a, b) => (a.bw - b.bw) || (b.score - a.score));
 
   async function shareOrDownload(filename, text) {
     const blob = new Blob([text], { type: 'text/plain' });
@@ -631,7 +682,8 @@ ${p.notes}
       return `
         <section class="panel">
           <div class="panel-title">Select Dungeon <small>Week ${wk}${WEEK_FOCUS[wk - 1] ? ' · ' + WEEK_FOCUS[wk - 1].t : ''}</small></div>
-          ${S.program.days.map((d, i) => `<button class="btn block" style="margin-bottom:8px;text-align:left" data-act="start" data-day="${i}">⚔ ${esc(d.name)} <span class="muted small">· ${d.exercises.length} exercises</span></button>`).join('')}
+          ${S.program.days.map((d, i) => { const isToday = d.dow === new Date().getDay(); return `<button class="btn block ${isToday ? 'primary' : ''}" style="margin-bottom:8px;text-align:left" data-act="start" data-day="${i}">⚔ ${esc(d.name)} <span class="small" style="opacity:.7">· ${isToday ? "TODAY'S MISSION" : d.exercises.length + ' exercises'}</span></button>`; }).join('')}
+          ${!isTrainingDay(dkey()) ? '<p class="small muted">Today is active recovery: 30–45 min walk + 10 min mobility. Complete it in Quests.</p>' : ''}
           <button class="btn block ghost" data-act="start" data-day="-1">+ Custom workout</button>
         </section>
         <section class="panel small muted">Pre-fills sets from your plan with this week's progression and your last weights. Your in-progress workout is saved automatically, even if you close the app.</section>`;
@@ -665,9 +717,9 @@ ${p.notes}
   function exerciseCard(e, i) {
     const body = e.type === 'cardio'
       ? `<div class="grid2"><label class="f"><span>Minutes</span><input inputmode="decimal" data-ex="${i}" data-k="min" value="${esc(e.min)}"></label><label class="f"><span>Distance (km, optional)</span><input inputmode="decimal" data-ex="${i}" data-k="dist" value="${esc(e.dist)}"></label></div>`
-      : `<div class="set-row small muted"><span class="n">Set</span><span class="center">kg</span><span class="center">reps / sec</span><span></span></div>
+      : `<div class="set-row small muted"><span class="n">Set</span><span class="center">+kg (blank = BW)</span><span class="center">reps / sec</span><span></span></div>
          ${e.sets.map((s, j) => `<div class="set-row"><span class="n">${j + 1}</span>
-            <input inputmode="decimal" data-ex="${i}" data-set="${j}" data-k="w" value="${esc(s.w)}" aria-label="Set ${j + 1} weight">
+            <input inputmode="decimal" data-ex="${i}" data-set="${j}" data-k="w" value="${esc(s.w)}" placeholder="BW" aria-label="Set ${j + 1} weight">
             <input inputmode="numeric" data-ex="${i}" data-set="${j}" data-k="r" value="${esc(s.r)}" placeholder="reps" aria-label="Set ${j + 1} reps">
             <button class="x-btn" data-act="delset" data-ex="${i}" data-set="${j}" aria-label="Remove set">×</button></div>`).join('')}
          <button class="btn sm" data-act="addset" data-ex="${i}">+ Set</button>`;
@@ -690,6 +742,7 @@ ${p.notes}
         <div class="panel-title">6-Week Program <button class="btn sm" data-act="planedit">Edit</button></div>
         <div class="week-tabs">${Array.from({ length: PROGRAM_WEEKS }, (_, i) => `<button class="chip ${wk === i + 1 ? 'on' : ''} ${cur === i + 1 ? 'now' : ''}" data-act="pweek" data-w="${i + 1}">W${i + 1}</button>`).join('')}</div>
         <div><b class="gold">Week ${wk}: ${f.t}</b> — ${esc(f.d)}</div>
+        <div class="small mono" style="margin-top:6px">Daily steps target: <b class="cyan">${Array.isArray(S.program.steps) && S.program.steps.length ? S.program.steps[Math.min(wk, S.program.steps.length) - 1] : S.targets.steps}</b></div>
         ${S.program.note ? `<p class="small muted">${esc(S.program.note)}</p>` : ''}
       </section>
       ${S.program.days.map(d => `<section class="panel"><div class="panel-title">${esc(d.name)}</div>
@@ -725,7 +778,7 @@ ${p.notes}
 
   function viewRecords(D) {
     const ws = [...S.workouts].sort((a, b) => (b.date + b.id).localeCompare(a.date + a.id));
-    const bests = Object.values(D.best).sort((a, b) => b.e1rm - a.e1rm);
+    const bests = sortBests(D.best);
     return `
       <section class="panel">
         <div class="panel-title">Send to Coach</div>
@@ -738,8 +791,8 @@ ${p.notes}
       </section>
 
       <section class="panel">
-        <div class="panel-title">Records <small>est. 1RM</small></div>
-        ${bests.length ? bests.map(b => `<div class="stat"><span>${esc(b.name)}</span><span class="mono">${b.w}×${b.r} · <b class="gold">${b.e1rm.toFixed(1)}</b></span></div>`).join('') : '<p class="muted small">Log some lifts to set records.</p>'}
+        <div class="panel-title">Records <small>e1RM · BW max reps</small></div>
+        ${bests.length ? bests.map(b => `<div class="stat"><span>${esc(b.name)}</span><span class="mono">${b.bw ? `BW × <b class="gold">${b.r}</b> reps` : `${b.w}×${b.r} · <b class="gold">${b.score.toFixed(1)}</b>`}</span></div>`).join('') : '<p class="muted small">Log some lifts to set records.</p>'}
       </section>
 
       <section class="panel">
@@ -786,7 +839,7 @@ ${p.notes}
       <section class="panel">
         <div class="panel-title">Player Profile <button class="btn sm ghost" data-act="go" data-tab="status">‹ Back</button></div>
         <p class="small muted" style="margin-top:0">Fill this in, then export <b>user_fitness_profile.txt</b> and add it to your Claude Project Knowledge. The coach builds your plan from it.</p>
-        <div class="row wrap"><button class="btn primary" data-act="profiletxt">Share profile .txt</button><button class="btn" data-act="copyprofile">Copy</button></div>
+        <div class="row wrap"><button class="btn primary" data-act="profiletxt">Share profile .txt</button><button class="btn" data-act="copyprofile">Copy</button><button class="btn" data-act="pasteprofile">Paste / import profile</button></div>
       </section>
       ${PROFILE_FIELDS.map(([title, fields]) => `<section class="panel"><div class="panel-title">${title}</div>
         ${fields.map(([k, l, ta]) => `<label class="f"><span>${l}</span>${ta ? `<textarea data-prof="${k}">${esc(p[k])}</textarea>` : `<input data-prof="${k}" value="${esc(p[k])}">`}</label>`).join('')}
@@ -797,7 +850,7 @@ ${p.notes}
         <label class="f"><span>Training days (workout quest appears on these days)</span></label>
         <div class="chips" style="margin-bottom:12px">${WEEKDAYS.map((d, i) => `<button class="chip ${S.trainingDays.includes(i) ? 'on' : ''}" data-act="tday" data-d="${i}">${d}</button>`).join('')}</div>
         <div class="grid2">
-          ${[['steps', 'Steps / day'], ['protein', 'Protein g / day'], ['fibre', 'Fibre g / day'], ['water', 'Water L / day'], ['sleep', 'Sleep h / night'], ['calories', 'Calories / day']].map(([k, l]) => `<label class="f"><span>${l}</span><input inputmode="decimal" data-target="${k}" value="${esc(T[k] || '')}"></label>`).join('')}
+          ${[['steps', 'Steps / day (if plan has no weekly ramp)'], ['protein', 'Protein g / day'], ['fibre', 'Fibre g / day'], ['water', 'Water L / day'], ['sleep', 'Sleep h / night'], ['calories', 'Calories / day']].map(([k, l]) => `<label class="f"><span>${l}</span><input inputmode="decimal" data-target="${k}" value="${esc(T[k] || '')}"></label>`).join('')}
         </div>
         <p class="small muted">Set calorie/macro targets from your coach's nutrition plan.</p>
         <button class="btn danger sm" data-act="wipe">Erase all data</button>
@@ -926,6 +979,7 @@ ${p.notes}
         if (await sys('<h3>RESET PROGRAM?</h3><p class="center">Replace your plan with the starter template?</p>', [{ label: 'Cancel', value: 0 }, { label: 'Reset', danger: true, value: 1 }])) { S.program = JSON.parse(JSON.stringify(DEFAULT_PROGRAM)); save(); render(); }
         break;
       case 'pasteprog': importProgramDialog(); break;
+      case 'pasteprofile': importProfileDialog(); break;
     }
   });
 
@@ -961,14 +1015,14 @@ Romanian Deadlift | 3 | 8 | 2 min | RPE 7
 # Day 2 – Conditioning
 Bike Intervals | 1 | 10x30s | — | hard | warm up first | cardio`;
     sys(`<h3>IMPORT PROGRAM</h3>
-      <p class="small">Paste a plan, one exercise per line:<br><span class="mono">Name | Sets | Reps | Rest | Load | Notes | cardio?</span><br>Start each day with <span class="mono">#&nbsp;Day name</span>. Ask your coach to output the plan in this format.</p>
+      <p class="small">Paste a plan, one exercise per line:<br><span class="mono">Name | Sets | Reps | Rest | Load | Notes | cardio?</span><br>Start each day with <span class="mono">#&nbsp;Day name</span> (start it with Mon/Tue… to mark the weekday). Optional per-week targets: <span class="mono">weeks:20 min/25 min/…</span>. Ask your coach to output the plan in this format.</p>
       <textarea id="progText" style="min-height:180px" placeholder="${esc(sample)}"></textarea>`,
       [{ label: 'Cancel', value: 0 }, { label: 'Import', primary: true, value: 1 }]).then(ok => {
       if (!ok) return;
       const txt = (document.getElementById('progText') || {}).value || lastProgText;
       const prog = parseProgram(txt);
       if (!prog.days.length) { toast('No days found — start each day with "# Day name"'); return; }
-      S.program = { note: S.program.note, days: prog.days }; save(); render(); toast(`Imported ${prog.days.length} days`);
+      S.program = { ...S.program, days: prog.days }; save(); render(); toast(`Imported ${prog.days.length} days`);
     });
     // keep text in case modal re-renders
     setTimeout(() => { const t = document.getElementById('progText'); if (t) t.addEventListener('input', () => { lastProgText = t.value; }); }, 0);
@@ -978,21 +1032,65 @@ Bike Intervals | 1 | 10x30s | — | hard | warm up first | cardio`;
     const days = []; let cur = null;
     txt.split(/\r?\n/).forEach(line => {
       const l = line.trim(); if (!l) return;
-      if (l.startsWith('#')) { cur = { name: l.replace(/^#+\s*/, ''), exercises: [] }; days.push(cur); return; }
+      if (l.startsWith('#')) {
+        const name = l.replace(/^#+\s*/, '');
+        const dow = WEEKDAYS.findIndex(d => name.toLowerCase().startsWith(d.toLowerCase()));
+        cur = { name, exercises: [], ...(dow >= 0 ? { dow } : {}) }; days.push(cur); return;
+      }
       if (!cur) { cur = { name: 'Day 1', exercises: [] }; days.push(cur); }
       const p = l.split('|').map(s => s.trim());
       const isCardio = p.some(x => /^cardio$/i.test(x));
-      const parts = p.filter(x => !/^cardio$/i.test(x));
-      cur.exercises.push(ex(parts[0] || 'Exercise', num(parts[1]) || 3, parts[2] || '10', parts[3] || '', parts[4] || '', parts[5] || '', isCardio ? 'cardio' : 'strength'));
+      const wk = p.find(x => /^weeks:/i.test(x));
+      const parts = p.filter(x => !/^cardio$/i.test(x) && !/^weeks:/i.test(x));
+      const weeks = wk ? wk.replace(/^weeks:\s*/i, '').split('/').map(x => x.trim()) : undefined;
+      cur.exercises.push(ex(parts[0] || 'Exercise', num(parts[1]) || 3, parts[2] || (weeks ? weeks[0] : '10'), parts[3] || '', parts[4] || '', parts[5] || '', isCardio ? 'cardio' : 'strength', weeks));
     });
     return { days };
+  }
+
+  const PROFILE_LABELS = {
+    'Name': 'name', 'Age': 'age', 'Height': 'height', 'Weight': 'weight', 'Body Fat Estimate': 'bodyFat',
+    'Primary Goal': 'goal', 'Secondary Goals': 'secondaryGoals', 'Target Weight': 'targetWeight', 'Timeline': 'timeline',
+    'Experience Level': 'experience', 'Weekly Activity Level': 'activity', 'Average Daily Steps': 'steps',
+    'Favourite Training Styles': 'likes', 'Disliked Training Styles': 'dislikes',
+    'Days Per Week': 'daysPerWeek', 'Session Length': 'sessionLength', 'Equipment Access': 'equipment',
+    'Injuries': 'injuries', 'Medical Conditions': 'medical', 'Restrictions': 'restrictions',
+    'Diet Preference': 'diet', 'Food Likes': 'foodLikes', 'Food Dislikes': 'foodDislikes', 'Allergies/Intolerances': 'allergies',
+    'Cooking Ability': 'cooking', 'Budget': 'budget', 'Daily Eating Schedule': 'eatingSchedule',
+  };
+  const TARGET_LABELS = { 'Calories': 'calories', 'Protein': 'protein', 'Fibre': 'fibre', 'Water': 'water', 'Sleep': 'sleep', 'Steps': 'steps' };
+  /** Parse a user_fitness_profile.txt back into the app. Returns number of fields read. */
+  function applyProfileTxt(txt) {
+    let n = 0;
+    const parts = txt.split(/^Coach Notes:\s*$/m);
+    parts[0].split(/\r?\n/).forEach(line => {
+      const m = line.match(/^([^:]+):\s*(.*)$/); if (!m) return;
+      const label = m[1].trim(), val = m[2].trim();
+      if (PROFILE_LABELS[label]) { S.profile[PROFILE_LABELS[label]] = val; n++; }
+      else if (TARGET_LABELS[label] && num(val) > 0) { S.targets[TARGET_LABELS[label]] = num(val); n++; }
+    });
+    if (parts[1] !== undefined) { S.profile.notes = parts[1].trim(); n++; }
+    save();
+    return n;
+  }
+  function importProfileDialog() {
+    let text = '';
+    sys(`<h3>IMPORT PROFILE</h3><p class="small">Paste the full <b>user_fitness_profile.txt</b> from your coach.</p><textarea id="profText" style="min-height:200px"></textarea>`,
+      [{ label: 'Cancel', value: 0 }, { label: 'Import', primary: true, value: 1 }]).then(ok => {
+      if (!ok) return;
+      const n = applyProfileTxt(text);
+      render(); toast(n ? `Profile updated (${n} fields)` : 'No profile fields found');
+    });
+    setTimeout(() => { const t = document.getElementById('profText'); if (t) t.addEventListener('input', () => { text = t.value; }); }, 0);
   }
 
   $('#fileInput').addEventListener('change', async e => {
     const f = e.target.files[0]; e.target.value = '';
     if (!f) return;
+    const raw = await f.text();
+    if (/USER FITNESS PROFILE/.test(raw)) { const n = applyProfileTxt(raw); render(); toast(`Profile updated (${n} fields)`); return; }
     try {
-      const obj = JSON.parse(await f.text());
+      const obj = JSON.parse(raw);
       const data = obj.data || obj;
       if (!data.days || !data.workouts) throw new Error('not a backup');
       const ok = await sys(`<h3>RESTORE BACKUP?</h3><p class="center">${data.workouts.length} workouts, ${Object.keys(data.days).length} days of quests.<br>This replaces the data on this device.</p>`, [{ label: 'Cancel', value: 0 }, { label: 'Restore', primary: true, value: 1 }]);
