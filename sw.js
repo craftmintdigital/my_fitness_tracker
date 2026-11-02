@@ -1,5 +1,5 @@
 // Offline cache for AWAKEN. Bump VERSION when files change.
-const VERSION = 'awaken-v2';
+const VERSION = 'awaken-v3';
 const FILES = ['./', './index.html', './styles.css', './app.js', './manifest.webmanifest', './icon.svg'];
 
 self.addEventListener('install', e => {

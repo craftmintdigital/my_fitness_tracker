@@ -10,7 +10,9 @@ A fitness tracker for your 6-week training and nutrition block that works like a
 | **Dungeons** | Workouts. Start one from your plan and it pre-fills the sets with this week's progression and your last weights. XP for every working set and cardio minute. |
 | **New Records** | An estimated 1RM (Epley) above your previous best triggers a PR alert and +25 XP. |
 | **Penalty Quest** | Missed yesterday's quests? You get a 20-minute brisk walk worth +20 XP. |
-| **Stats** | STR (sets), END (cardio), AGI (steps/mobility), VIT (sleep/nutrition), DIS (full clears & streaks). |
+| **Routine Quests** | Your daily habits (wake time, no-phone, sun, deep work, Top 3 MVPs, reading, screens off), each with its own streak. +10 XP each, +30 for clearing them all. Edit them in Profile → System Settings. |
+| **Today's Routine** | Time-blocked day plan with the current block highlighted. During the wake-time ramp (08:00 → 07:30 → 07:00) the whole day shifts with it. |
+| **Stats** | STR (sets), END (cardio), AGI (steps/mobility), VIT (sleep/nutrition), DIS (clears, habits), INT (deep work, planning, reading). |
 | **Levels & Ranks** | E → D (Lv10) → C (Lv20) → B (Lv35) → A (Lv50) → S (Lv70). A consistent 6-week block lands around C-rank. |
 | **Pain flag** | If you log pain, the app tells you to pause that movement and get it reviewed. |
 

@@ -104,8 +104,37 @@
     END: 'Endurance — cardio & conditioning',
     AGI: 'Agility — steps & mobility',
     VIT: 'Vitality — sleep, protein, fibre, water',
-    DIS: 'Discipline — full quest clears',
+    DIS: 'Discipline — quest clears & routine habits',
+    INT: 'Intellect — deep work, planning, reading',
   };
+
+  // Daily routine habits (training itself is the Dungeon quest). {wake} = this week's wake-up time.
+  const DEFAULT_HABITS = [
+    { id: 'wake', label: 'Wake up by {wake}', stat: 'DIS' },
+    { id: 'nophone', label: 'No phone for 30 min after waking', stat: 'DIS' },
+    { id: 'sun', label: 'Morning sunlight (10+ min outdoors)', stat: 'VIT' },
+    { id: 'deepwork', label: '90 min deep work block', stat: 'INT' },
+    { id: 'mvp', label: "Plan tomorrow's Top 3 MVPs", stat: 'INT' },
+    { id: 'read', label: 'Read 20 min', stat: 'INT' },
+    { id: 'screenoff', label: 'Screens off 30 min before bed', stat: 'VIT' },
+  ];
+  // Shift wake time gradually (~30 min per week) — abrupt shifts wreck sleep.
+  const DEFAULT_WAKE_RAMP = ['08:00', '07:30', '07:00', '07:00', '07:00', '07:00'];
+  const DEFAULT_ROUTINE = `07:00 Wake · 500 ml water + pinch of salt · NO PHONE
+07:05 Outside: 10 min morning sun + 5 min mobility
+07:30 Pre-training fuel: banana + 2 dates (phone still off)
+07:45 TRAINING — today's mission (runs outdoors = more sun)
+08:45 Shower + protein breakfast
+09:30 DEEP WORK 90 min — phone in another room, one task only
+11:00 Venture work / calls / email
+13:00 Lunch + 10 min walk
+13:45 Venture work
+16:30 Snack (sattu + peanuts + fruit)
+17:00 Admin / meetings · evening walk to hit steps
+19:30 Dinner (2.5–3 h before bed)
+21:30 Shutdown: plan tomorrow's Top 3 MVPs · haldi milk
+22:15 SCREENS OFF → read 20 min
+22:45 Lights out (8 h+ sleep → 07:00)`;
 
   const blankState = () => ({
     version: 1,
@@ -129,6 +158,9 @@
     seenLevel: 1,
     seenRank: 'E',
     seenPenalty: '',
+    habits: JSON.parse(JSON.stringify(DEFAULT_HABITS)),
+    wakeRamp: [...DEFAULT_WAKE_RAMP],
+    routine: DEFAULT_ROUTINE,
     onboarded: false,
   });
 
@@ -185,18 +217,38 @@
       { id: 'sleep', label: 'Sleep', unit: 'h', target: T.sleep, value: num(d.sleep), stat: 'VIT', input: true, step: 0.25 },
     ];
     if (isTrainingDay(k)) {
-      q.push({ id: 'workout', label: 'Clear a Dungeon (log a workout)', target: 1, value: workoutsOn(k).length ? 1 : 0, stat: 'STR', auto: true });
+      q.push({ id: 'workout', label: `Clear today's Dungeon${todayMission(k) ? ': ' + todayMission(k) : ''}`, target: 1, value: workoutsOn(k).length ? 1 : 0, stat: 'STR', auto: true });
     } else {
       q.push({ id: 'mobility', label: 'Recovery: 10 min mobility / stretch', target: 1, value: (d.mobility || workoutsOn(k).length) ? 1 : 0, stat: 'AGI', toggle: true });
     }
     q.forEach(x => { x.done = x.target > 0 && x.value >= x.target; });
     return q;
   }
+  function todayMission(k) {
+    const dow = parseKey(k).getDay();
+    const d = S.program.days.find(x => x.dow === dow);
+    return d ? d.name.replace(/^\w{3}\s*–\s*/, '') : '';
+  }
   function stepTarget(k) {
     const ramp = S.program && S.program.steps;
     const wk = programWeek(k);
     if (Array.isArray(ramp) && ramp.length && wk >= 1) return ramp[Math.min(wk, ramp.length) - 1];
     return S.targets.steps;
+  }
+  function wakeTime(k) {
+    const wk = programWeek(k), r = S.wakeRamp || [];
+    if (!r.length) return '07:00';
+    return r[Math.min(Math.max(wk, 1), r.length) - 1];
+  }
+  function habitsFor(k) {
+    const d = S.days[k] || {};
+    return (S.habits || []).map(h => ({ ...h, label: h.label.replace('{wake}', wakeTime(k)), done: !!d['h_' + h.id] }));
+  }
+  function habitStreak(id) {
+    let k = dkey(), n = 0;
+    if (!(S.days[k] || {})['h_' + id]) k = addDays(k, -1);
+    while ((S.days[k] || {})['h_' + id]) { n++; k = addDays(k, -1); }
+    return n;
   }
   const dayCleared = k => questsFor(k).every(q => q.done);
 
@@ -210,7 +262,7 @@
 
   /** Derive everything game-related from raw logs. */
   function derive() {
-    const stats = { STR: 0, END: 0, AGI: 0, VIT: 0, DIS: 0 };
+    const stats = { STR: 0, END: 0, AGI: 0, VIT: 0, DIS: 0, INT: 0 };
     let xp = 0;
     const best = {};       // exercise -> {e1rm, w, r, date}
     const wxp = {};        // workout id -> {xp, prs:[]}
@@ -226,6 +278,9 @@
       if (qs.every(q => q.done)) { xp += 50; stats.DIS += 2; clears[k] = true; }
       const p = penaltyFor(k);
       if (p && p.done) { xp += 20; stats.END += 1; }
+      const hs = habitsFor(k);
+      hs.forEach(h => { if (h.done) { xp += 10; if (stats[h.stat] !== undefined) stats[h.stat] += 1; } });
+      if (hs.length && hs.every(h => h.done)) { xp += 30; stats.DIS += 1; }
     });
 
     // workouts, chronological for PR detection
@@ -445,6 +500,16 @@ ${p.notes}
       L.push(`Body weight change in range: ${diff > 0 ? '+' : ''}${diff.toFixed(1)} kg (${weights[0][1]} → ${weights[weights.length - 1][1]})`);
     }
     L.push('');
+    if ((S.habits || []).length) {
+      L.push('ROUTINE HABITS (days done / days in range, current streak)');
+      const nDays = daysBetween(from, today) + 1;
+      S.habits.forEach(h => {
+        let c = 0, kk = from;
+        while (kk <= today) { if ((S.days[kk] || {})['h_' + h.id]) c++; kk = addDays(kk, 1); }
+        L.push(`${h.label.replace('{wake}', wakeTime(today))}: ${c}/${nDays} (${Math.round((c / nDays) * 100)}%), streak ${habitStreak(h.id)}`);
+      });
+      L.push('');
+    }
     L.push('WORKOUTS');
     const ws = S.workouts.filter(w => w.date >= from && w.date <= today).sort((a, b) => a.date.localeCompare(b.date));
     if (!ws.length) L.push('(none logged)');
@@ -635,6 +700,8 @@ ${p.notes}
           </div>` : ''}
       </section>
       ${allDone ? `<section class="panel center"><b class="gold mono">◆ DAILY QUEST CLEARED ◆</b><div class="small muted">Rewards applied: +${qs.length * 10 + 50} XP</div></section>` : ''}
+      ${habitsPanel(k)}
+      ${isToday ? routinePanel() : ''}
       <section class="panel">
         <div class="panel-title">Body & Fuel <small>optional</small></div>
         <div class="grid2">
@@ -643,6 +710,43 @@ ${p.notes}
         </div>
         <label class="f"><span>Day notes (mood, stress, soreness, food)</span><textarea data-field="note" data-day="${k}">${esc(d.note || '')}</textarea></label>
       </section>`;
+  }
+
+  function habitsPanel(k) {
+    const hs = habitsFor(k);
+    if (!hs.length) return '';
+    const n = hs.filter(h => h.done).length;
+    return `<section class="panel">
+      <div class="panel-title">Routine Quests <small>${n}/${hs.length} · +10 each · all: +30</small></div>
+      ${hs.map(h => { const st = habitStreak(h.id); return `<label class="quest ${h.done ? 'done' : ''}">
+        <div class="check">${h.done ? '✓' : ''}</div>
+        <div><div class="q-label">${esc(h.label)}</div><div class="q-sub">${h.stat}${st ? ` · 🔥 ${st}-day streak` : ''}</div></div>
+        <input type="checkbox" data-field="h_${esc(h.id)}" data-day="${k}" ${h.done ? 'checked' : ''}>
+      </label>`; }).join('')}
+      ${n === hs.length ? '<div class="center gold mono small" style="margin-top:8px">◆ ROUTINE CLEARED ◆</div>' : ''}
+    </section>`;
+  }
+
+  function routinePanel() {
+    const toMin = t => { const [h, m] = t.split(':').map(Number); return h * 60 + m; };
+    const toHM = m => { m = ((m % 1440) + 1440) % 1440; return pad(Math.floor(m / 60)) + ':' + pad(m % 60); };
+    let lines = String(S.routine || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    if (!lines.length) return '';
+    // While ramping the wake time, slide the whole day (incl. bedtime) so sleep stays 8 h+.
+    const first = lines.find(l => /^\d\d:\d\d/.test(l));
+    const shift = first ? toMin(wakeTime(dkey())) - toMin(first.slice(0, 5)) : 0;
+    if (shift) lines = lines.map(l => (/^\d\d:\d\d/.test(l) ? toHM(toMin(l.slice(0, 5)) + shift) + l.slice(5) : l));
+    const now = new Date(); const hm = pad(now.getHours()) + ':' + pad(now.getMinutes());
+    let cur = -1;
+    lines.forEach((l, i) => { const t = l.slice(0, 5); if (/^\d\d:\d\d$/.test(t) && t <= hm) cur = i; });
+    const wake = wakeTime(dkey());
+    const sunday = new Date().getDay() === 0;
+    return `<section class="panel">
+      <div class="panel-title">Today's Routine <small>wake target ${wake}</small></div>
+      ${shift ? `<p class="small muted" style="margin-top:0">Wake-time ramp: this week's schedule is shifted <b class="gold">${shift > 0 ? '+' : ''}${shift} min</b> (bedtime too) so you keep 8 h sleep.</p>` : ''}
+      ${sunday ? '<p class="small gold" style="margin-top:0">Sunday: no training. Long outdoor walk in the morning sun, weekly review + send the coach report.</p>' : ''}
+      ${lines.map((l, i) => `<div class="stat" style="${i === cur ? 'color:var(--gold);font-weight:700' : i < cur ? 'opacity:.55' : ''}"><span class="mono small">${esc(l.slice(0, 5))}</span><span style="flex:1;margin-left:10px">${esc(l.slice(5).trim())}</span></div>`).join('')}
+    </section>`;
   }
 
   function questRow(q, k) {
@@ -853,6 +957,9 @@ ${p.notes}
           ${[['steps', 'Steps / day (if plan has no weekly ramp)'], ['protein', 'Protein g / day'], ['fibre', 'Fibre g / day'], ['water', 'Water L / day'], ['sleep', 'Sleep h / night'], ['calories', 'Calories / day']].map(([k, l]) => `<label class="f"><span>${l}</span><input inputmode="decimal" data-target="${k}" value="${esc(T[k] || '')}"></label>`).join('')}
         </div>
         <p class="small muted">Set calorie/macro targets from your coach's nutrition plan.</p>
+        <label class="f"><span>Wake-time ramp, week 1→6 (separate with /)</span><input data-setting="wakeRamp" value="${esc((S.wakeRamp || []).join(' / '))}"></label>
+        <label class="f"><span>Routine habits — one per line, optional stat at end: "Read 20 min | INT" ({wake} = this week's wake time)</span><textarea data-setting="habits" style="min-height:150px">${esc((S.habits || []).map(h => `${h.label} | ${h.stat}`).join('\n'))}</textarea></label>
+        <label class="f"><span>Daily routine timeline — "HH:MM what"</span><textarea data-setting="routine" style="min-height:240px">${esc(S.routine || '')}</textarea></label>
         <button class="btn danger sm" data-act="wipe">Erase all data</button>
       </section>`;
   }
@@ -881,6 +988,19 @@ ${p.notes}
     }
     if (t.dataset.prof) { S.profile[t.dataset.prof] = val; save(); return; }
     if (t.dataset.target) { S.targets[t.dataset.target] = num(val); save(); return; }
+    if (t.dataset.setting === 'wakeRamp') { S.wakeRamp = val.split('/').map(x => x.trim()).filter(x => /^\d{1,2}:\d\d$/.test(x)).map(x => x.padStart(5, '0')); save(); return; }
+    if (t.dataset.setting === 'routine') { S.routine = val; save(); return; }
+    if (t.dataset.setting === 'habits') {
+      const old = S.habits || [];
+      S.habits = val.split(/\r?\n/).map(l => l.trim()).filter(Boolean).map(l => {
+        const [label, st] = l.split('|').map(x => x.trim());
+        const stat = STAT_INFO[(st || '').toUpperCase()] ? st.toUpperCase() : 'DIS';
+        const same = old.find(h => h.label === label);
+        const id = same ? same.id : label.toLowerCase().replace(/\{wake\}/g, '').replace(/[^a-z0-9]+/g, '').slice(0, 24) || uid();
+        return { id, label, stat };
+      });
+      save(); return;
+    }
     if (t.dataset.pd !== undefined) {
       const d = S.program.days[+t.dataset.pd];
       if (t.dataset.pe !== undefined) d.exercises[+t.dataset.pe][t.dataset.k] = t.dataset.k === 'sets' ? num(val) : val; else d[t.dataset.k] = val;
