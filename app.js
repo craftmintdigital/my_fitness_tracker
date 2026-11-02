@@ -31,63 +31,70 @@
   const run = (name, weeks, load, notes) => ex(name, 1, weeks[0], '—', load, notes, 'cardio', weeks);
 
   // Hybrid athlete block: bodyweight-only hypertrophy + aerobic base for future marathon / HYROX-style racing.
-  // 6 training days (Mon–Sat) + Sunday active recovery. dow = weekday (0 Sun … 6 Sat).
+  // v3, built from the concurrent-training research (see README "Why the plan looks like this"):
+  //  - Runs Mon/Wed/Fri, strength Tue/Thu/Sat, Sunday active recovery. dow = weekday (0 Sun … 6 Sat).
+  //  - Legs twice a week (Tue squat pattern, Sat hinge pattern) with plyometrics, because strength + jumps
+  //    on 2+ days a week is what improves running economy. Thu is upper-only so legs are fresh for Fri's long run.
+  //  - Mostly easy running; one race-style session (Wed) a week; weekly run time grows < 30 %.
+  // v4: strength days moved to the park (pull-up bar, dips, low bar, monkey bars, benches), plus Nordic curls,
+  //  which halve hamstring injuries in prevention programmes. Each exercise keeps a home fallback in its notes.
   const OLD_STARTER_NOTE = 'Starter template.';
   const DEFAULT_PROGRAM = {
-    id: 'hybrid-bw-v1',
-    note: 'Hybrid Athlete Block 1 (bodyweight, no gym). Strength sets end 1–3 reps short of failure (RIR 1–3). When you beat the top of a rep range on every set, move to the next variation or add backpack load (books / water bottles). Easy runs = conversational pace, RPE 3–4/10 — if you can\'t speak in sentences, slow down or walk. Sunday = active recovery (walk + mobility).',
+    id: 'hybrid-bw-v4',
+    note: 'Hybrid Athlete Block 1 (bodyweight, no gym). Strength sets end 1–3 reps short of failure (RIR 1–3); on the last set of each exercise go to 1 rep short. Bodyweight and backpack sets build muscle as well as heavy weights when taken that close to failure. Strength days use the park (pull-up bar, parallel bars, low bar, monkey bars, benches); every exercise has a home fallback in its notes for rainy or busy days. When you beat the top of a rep range on every set, move to the next variation or add backpack load (books, water bottles). Easy runs are conversational, RPE 3–4/10: if you can\'t speak in sentences, slow down or walk. Wednesday is the only hard session. Sunday is active recovery (walk + mobility).',
     steps: [7000, 7000, 8500, 8500, 10000, 10000],
     days: [
-      { dow: 1, name: 'Mon – Upper A: Push Protocol', exercises: [
-        ex('Push-up', 4, '8–15', '90 s', 'RIR 1–2', 'Ladder: incline → standard → feet-elevated → deficit (hands on books) → archer.'),
-        ex('Inverted Table Row', 4, '8–12', '90 s', 'RIR 1–2', 'Lie under a sturdy table, grip edge, body straight. Ladder: knees bent → legs straight → feet on chair → backpack on chest.'),
-        ex('Pike Push-up', 3, '6–12', '90 s', 'RIR 2', 'Hips high, head to a spot in front of hands. Harder: feet on a chair.'),
-        ex('Chair Dip', 3, '8–15', '90 s', 'RIR 2', 'Two sturdy chairs or bed edge. Stop if front of shoulder hurts.'),
-        ex('Towel Door Row', 3, '12–15', '60 s', 'RIR 1–2', 'Towel round a door handle (door closed, you on the hinge side). Squeeze shoulder blades.'),
-        ex('Hollow Body Hold', 3, '20s', '45 s', 'Bodyweight', 'Low back glued to floor. Bend knees if it lifts.'),
-      ]},
-      { dow: 2, name: 'Tue – Easy Run + Runner Armour', exercises: [
-        run('Easy Run (Zone 2)', ['25 min (run 4 / walk 1)', '30 min (run 5 / walk 1)', '30 min continuous', '25 min easy', '35 min + 4×20s strides', '40 min + 6×20s strides'], 'RPE 3–4, conversational', 'Soft surface if possible. Strides = smooth fast 20s, full walk-back recovery.'),
-        ex('Single-leg Calf Raise', 3, '12–20', '45 s', 'Bodyweight → backpack', 'On a stair edge, full stretch at bottom, 2 s pause at top. Shin & Achilles insurance.'),
-        ex('Tibialis Raise', 2, '20', '45 s', 'Bodyweight', 'Back against wall, heels ~30 cm out, lift toes.'),
-        ex('Side Plank', 3, '30s', '30 s', 'Each side', 'Hips high, straight line.'),
+      { dow: 1, name: 'Mon – Easy Run + Strides', exercises: [
+        run('Easy Run (Zone 2)', ['25 min (run 4 / walk 1)', '30 min (run 5 / walk 1)', '30 min continuous + 4×20s strides', '25 min easy', '35 min + 6×20s strides', '35 min + 6×20s strides'], 'RPE 3–4, conversational', 'Soft surface if possible. Strides = smooth, fast 20 s with a full walk-back recovery; they teach speed without fatigue.'),
+        ex('Single-leg Calf Raise', 3, '12–20', '45 s', 'Bodyweight → backpack', 'On a stair edge, full stretch at the bottom, 2 s pause at the top. Shin and Achilles insurance.'),
+        ex('Tibialis Raise', 2, '20', '45 s', 'Bodyweight', 'Back against a wall, heels ~30 cm out, lift your toes.'),
         ex('Dead Bug', 3, '8', '45 s', 'Each side', 'Slow. Exhale fully, low back stays down.'),
       ]},
-      { dow: 3, name: 'Wed – Lower: Leg Day Protocol', exercises: [
-        ex('Bulgarian Split Squat', 4, '8–12', '90 s', 'RIR 1–2 (backpack when >15 reps)', 'Rear foot on bed/chair. Reps are per leg. Torso slightly forward = more glutes.'),
-        ex('Single-leg RDL', 3, '10–12', '75 s', 'Backpack in opposite hand', 'Per leg. Hips square, soft knee, feel the hamstring.'),
-        ex('Sliding Leg Curl', 3, '8–12', '75 s', 'RIR 1–2', 'Socks on tiles / towel. Bridge up, slide heels out & back. Harder: single leg.'),
-        ex('Step-up', 3, '10', '60 s', 'Backpack', 'Per leg. Knee-height chair/stair, drive through the front heel, no push-off from back leg.'),
-        ex('Pogo Hops', 3, '20', '60 s', 'Bodyweight', 'Small, quick, stiff ankles. Tendon prep for running. Skip if shins are sore.'),
-        ex('Single-leg Glute Bridge', 3, '12', '45 s', 'Each side', '2 s squeeze at top.'),
+      { dow: 2, name: 'Tue – Strength A: Squat + Push (park)', exercises: [
+        ex('Pogo Hops', 3, '20', '60 s', 'Bodyweight', 'First, while fresh, on grass or rubber. Small, quick, stiff ankles: tendon prep for running. Skip if shins are sore.'),
+        ex('Bulgarian Split Squat', 4, '8–12', '90 s', 'RIR 2 (backpack when >15 reps)', 'Rear foot on a park bench. Reps are per leg. Leave 2 in the tank: the mission is tomorrow. Home: rear foot on a bed or chair.'),
+        ex('Parallel Bar Dip', 4, '5–10', '2 min', 'RIR 1–2', 'Shoulders down, slight forward lean, lower until upper arms are level with the bars. Can\'t do 5 yet? Jump to the top and lower in 3–5 s. Stop if the front of your shoulder hurts. Home: chair dip.'),
+        ex('Step-up', 3, '10', '60 s', 'Backpack', 'Per leg, onto a bench. Drive through the front heel, no push-off from the back leg. Home: knee-height chair or stair.'),
+        ex('Decline Push-up', 3, '8–15', '75 s', 'RIR 1–2', 'Feet on a bench, hands on the ground. Harder: hands on the parallel bars for a deeper range. Home: feet on a chair.'),
+        ex('Hanging Knee Raise', 3, '8–12', '60 s', 'Bodyweight', 'Hang from the pull-up bar, no swinging; curl your pelvis up, lower slowly. Harder: straight legs. Home: hollow body hold 3 × 20 s.'),
       ]},
-      { dow: 4, name: 'Thu – Upper B: Pull Protocol', exercises: [
-        ex('Inverted Table Row', 4, '8–12', '90 s', 'RIR 1 (harder variation than Mon)', 'Feet elevated or backpack on chest once 12 reps is easy.'),
-        ex('Close-grip Push-up', 4, '8–15', '90 s', 'RIR 1–2', 'Hands under shoulders, elbows brush ribs — triceps focus.'),
-        ex('Backpack Bent-over Row', 3, '10–15', '75 s', 'Loaded backpack', 'Hinge to ~45°, pull bag to belly button.'),
-        ex('Decline Push-up', 3, '8–15', '75 s', 'RIR 1–2', 'Feet on chair — upper chest & shoulders.'),
-        ex('Backpack Curl', 3, '12–15', '60 s', 'Loaded backpack', 'Hold by the top handle/straps, slow lowering.'),
-        ex('Prone Y-T-W Raise', 2, '10', '45 s', 'Bodyweight', 'Each letter. Thumbs up, squeeze upper back. Posture & shoulder health.'),
-      ]},
-      { dow: 5, name: 'Fri – HYBRID MISSION (race sim)', exercises: [
+      { dow: 3, name: 'Wed – HYBRID MISSION (race sim)', exercises: [
         run('Mission Circuit', ['4 rounds', '5 rounds', '6 rounds', '4 rounds (easy)', '7 rounds', '8 rounds — FOR TIME'], 'Steady, RPE 6–7 (Wk6 race effort)',
-          'Each round = 400m run (~2–3 min) + next station in order: 1) 10 burpee broad jumps 2) 20 walking lunges (backpack) 3) 30 m bear crawl 4) 15 push-ups 5) 15 backpack squat-to-press 6) 20 mountain climbers/side 7) 60 s backpack carry 8) 20 sit-ups. Log TOTAL minutes — beat it next week.'),
-        ex('Plank', 2, '45s', '45 s', 'Bodyweight', 'Cool-down core. Then 5 min walk.'),
+          'Each round = 400 m run (~2–3 min) + next station in order: 1) 10 burpee broad jumps 2) 20 walking lunges (backpack) 3) 30 m bear crawl 4) 15 push-ups 5) 15 backpack squat-to-press 6) 20 mountain climbers/side 7) 60 s backpack carry 8) 20 sit-ups. Log TOTAL minutes and beat it next week. This is the week\'s only hard session: keep it controlled until week 6.'),
+        ex('Plank', 2, '45s', '45 s', 'Bodyweight', 'Cool-down core. Then a 5 min walk.'),
       ]},
-      { dow: 6, name: 'Sat – Long Run (Endurance Raid)', exercises: [
-        run('Long Easy Run', ['35 min run/walk', '40 min run/walk', '45 min easy', '35 min easy', '50 min easy', '5K TIME TRIAL + 15 min easy'], 'RPE 3–4 (Wk6 trial: hard but even)', 'Slow enough to talk. Water + pinch of salt + lemon after. Walk breaks are allowed, not failure.'),
+      { dow: 4, name: 'Thu – Strength B: Pull + Push (park, upper only)', exercises: [
+        ex('Pull-up', 4, '3–8', '2 min', 'RIR 1', 'Ladder: 30 s dead hang → scapular pull-ups → negatives (jump up, lower in 5 s) → full reps → backpack once 10 is easy. Log negatives as reps. Home: towel door row 4 × 12–15.'),
+        ex('Push-up', 4, '8–15', '90 s', 'RIR 1–2', 'Ladder: standard → feet on the bench → deficit with hands on the parallel bars → archer.'),
+        ex('Inverted Row', 4, '8–12', '90 s', 'RIR 1–2', 'Under the waist-high bar, body straight, pull your chest to the bar. Ladder: knees bent → legs straight → feet on the bench → backpack. Home: under a sturdy table.'),
+        ex('Pike Push-up', 3, '6–12', '90 s', 'RIR 2', 'Feet on the bench, hips high, head to a spot in front of your hands. Home: feet on a chair, or on the floor.'),
+        ex('Monkey Bar Traverse', 3, '1–2 lengths', '90 s', 'Bodyweight', 'Grip and shoulder strength. Log lengths as reps. Skip a rung to make it harder. Home: dead hang 3 × 30 s from a door frame bar, or skip.'),
+        ex('Prone Y-T-W Raise', 2, '10', '45 s', 'Bodyweight', 'Lie face down along the bench. Each letter: thumbs up, squeeze your upper back. Posture and shoulder health. Home: face down on the floor.'),
+        ex('Side Plank', 3, '30s', '30 s', 'Each side', 'Hips high, straight line. No leg work today: long run tomorrow.'),
+      ]},
+      { dow: 5, name: 'Fri – Long Run (Endurance Raid)', exercises: [
+        run('Long Easy Run', ['35 min run/walk', '40 min run/walk', '45 min easy', '35 min easy', '50 min easy', '5K TIME TRIAL + 15 min easy'], 'RPE 3–4 (Wk6 trial: hard but even)', 'Slow enough to talk. Water + a pinch of salt + lemon after. Walk breaks are allowed, not failure.'),
         ex('Single-leg Calf Raise', 2, '15–20', '45 s', 'Bodyweight', 'Post-run.'),
+      ]},
+      { dow: 6, name: 'Sat – Strength C: Hinge + Pull + Jumps (park)', exercises: [
+        ex('Squat Jump', 3, '6', '75 s', 'Bodyweight', 'First, while fresh, on grass or rubber. Jump as high as you can, land softly, reset fully between reps. Power, not cardio.'),
+        ex('Single-leg RDL', 4, '10–12', '75 s', 'Backpack in opposite hand', 'Per leg. Hips square, soft knee, feel the hamstring.'),
+        ex('Nordic Curl Negative', 3, '3–5', '2 min', 'Slow as possible', 'Kneel on something soft, heels hooked under the low bar or a bench. Lower your body forward as slowly as you can, catch yourself with your hands, push back up. Week 1: 2 easy sets only, the soreness is real. Home: sliding leg curl 3 × 8–12.'),
+        ex('Reverse Lunge', 3, '10', '75 s', 'Backpack', 'Per leg. Step back, back knee to just above the ground, push through the front heel.'),
+        ex('Single-leg Hip Thrust', 3, '12', '60 s', 'Each side', 'Upper back on the bench, one foot planted, drive your hips up, 2 s squeeze at the top. Home: single-leg glute bridge on the floor.'),
+        ex('Chin-up', 3, '3–8', '2 min', 'RIR 1', 'Palms facing you. Same ladder as pull-ups: negatives first if needed. Home: backpack curl 3 × 12–15 + towel door row 3 × 12–15. Today can be your hardest day: Sunday is recovery.'),
       ]},
     ],
   };
+  DEFAULT_PROGRAM.days.sort((a, b) => a.dow - b.dow);
 
   const WEEK_FOCUS = [
-    { t: 'Baseline', d: 'Find your level: pick the variation that hits the rep range at RIR 2. Runs are run/walk — keep them easy.' },
+    { t: 'Baseline', d: 'Find your level: pick the variation that hits the rep range at RIR 2. Runs are run/walk, so keep them easy.' },
     { t: '+1 Rep', d: 'Same variations as Week 1, add 1 rep to every set. Runs get 5 min longer.' },
-    { t: '+Load', d: 'Harder variation or add backpack weight. First continuous runs.' },
+    { t: '+Load', d: 'Harder variation or add backpack weight. First continuous runs, and your first strides.' },
     { t: 'Deload', d: 'One fewer set, stop 3–4 reps short of failure, shorter runs. Recover and absorb.' },
     { t: 'Volume', d: '+1 set on every strength exercise. Longest runs so far + strides.' },
-    { t: 'Performance', d: 'Beat Week 3 on every lift. Fri: 8-round mission for time. Sat: 5K time trial.' },
+    { t: 'Performance', d: 'Beat Week 3 on every lift. Wed: 8-round mission for time. Fri: 5K time trial.' },
   ];
 
   const RANKS = [
@@ -100,12 +107,12 @@
   ];
 
   const STAT_INFO = {
-    STR: 'Strength — working sets lifted',
-    END: 'Endurance — cardio & conditioning',
-    AGI: 'Agility — steps & mobility',
-    VIT: 'Vitality — sleep, protein, fibre, water',
-    DIS: 'Discipline — quest clears & routine habits',
-    INT: 'Intellect — deep work, planning, reading',
+    STR: 'Strength: grows with working sets',
+    END: 'Endurance: grows with cardio and conditioning',
+    AGI: 'Agility: grows with steps and mobility',
+    VIT: 'Vitality: grows with sleep, protein, fibre and water',
+    DIS: 'Discipline: grows with cleared quests and routine habits',
+    INT: 'Intellect: grows with deep work, planning and reading',
   };
 
   // Daily routine habits (training itself is the Dungeon quest). {wake} = this week's wake-up time.
@@ -120,7 +127,8 @@
   ];
   // Shift wake time gradually (~30 min per week) — abrupt shifts wreck sleep.
   const DEFAULT_WAKE_RAMP = ['08:00', '07:30', '07:00', '07:00', '07:00', '07:00'];
-  const DEFAULT_ROUTINE = `07:00 Wake · 500 ml water + pinch of salt · NO PHONE
+  // Previous default; saves still on it are moved to the new one.
+  const ROUTINE_V1 = `07:00 Wake · 500 ml water + pinch of salt · NO PHONE
 07:05 Outside: 10 min morning sun + 5 min mobility
 07:30 Pre-training fuel: banana + 2 dates (phone still off)
 07:45 TRAINING — today's mission (runs outdoors = more sun)
@@ -135,6 +143,34 @@
 21:30 Shutdown: plan tomorrow's Top 3 MVPs · haldi milk
 22:15 SCREENS OFF → read 20 min
 22:45 Lights out (8 h+ sleep → 07:00)`;
+  // Daily schedule. Lines tagged [run], [strength] or [rest] only show on that kind of day; untagged lines show every day.
+  // Runs stay in the morning (races start in the morning, and it pairs with morning sun); strength moves to late
+  // afternoon, when strength output peaks and the evidence hints at slightly more muscle gain. It still ends 4+ h
+  // before bed, well clear of the 1 h window where hard exercise can hurt sleep.
+  const DEFAULT_ROUTINE = `07:00 Wake: 500 ml water + pinch of salt, NO PHONE
+07:05 Outside: 10 min morning sun + 5 min mobility
+07:30 [run] Pre-run fuel: banana + 2 dates (phone still off)
+07:45 [run] RUN: today's mission, outdoors
+08:45 [run] Shower + protein breakfast
+07:30 [strength] 20 min easy walk outside (more sun, still no phone)
+08:00 [strength] Protein breakfast
+07:30 [rest] Long walk in the morning sun (30–45 min)
+08:30 [rest] Protein breakfast
+09:30 DEEP WORK 90 min: phone in another room, one task only
+11:00 Venture work / calls / email
+13:00 Lunch + 10 min walk
+13:45 Venture work
+16:00 [strength] Pre-lift snack: sattu + peanuts + fruit
+16:30 [run,rest] Snack (sattu + peanuts + fruit)
+17:00 [run,rest] Admin / meetings, evening walk to hit steps
+17:15 [strength] STRENGTH: today's mission (warm up 5 min first)
+18:15 [strength] Shower + 30–40 g protein, then admin / steps
+18:00 [rest] Weekly review + send the coach report
+19:30 Dinner (2.5–3 h before bed)
+21:30 Shutdown: plan tomorrow's Top 3 MVPs, haldi milk
+22:15 SCREENS OFF → read 20 min
+22:45 Lights out (8 h+ sleep → 07:00)`;
+
 
   const blankState = () => ({
     version: 1,
@@ -189,13 +225,57 @@
       const oldT = { steps: 8000, protein: 140, water: 3, sleep: 7, fibre: 30, calories: 0 };
       Object.keys(oldT).forEach(k => { if (out.targets[k] === oldT[k]) out.targets[k] = b.targets[k]; });
     }
+    migrateScheduleV2(out.program);
+    migratePlanV3(out);
+    migratePlanV4(out);
+    if (out.routine === ROUTINE_V1) out.routine = DEFAULT_ROUTINE;
     return out;
+  }
+  /** Block 1 v1 had strength Mon/Wed/Thu and runs Tue/Fri/Sat. Move it to runs Mon/Wed/Fri + strength
+   *  Tue/Thu/Sat, keeping any edits to exercises. Only touches a plan whose days are all the original
+   *  v1 days, so a coach-imported plan is never reshuffled. */
+  function migrateScheduleV2(prog) {
+    if (!prog || prog.id !== 'hybrid-bw-v1' || !Array.isArray(prog.days)) return;
+    const MAP = [['Mon – Upper A', 1, 2], ['Tue – Easy Run', 2, 1], ['Wed – Lower', 3, 6], ['Thu – Upper B', 4, 4], ['Fri – HYBRID MISSION', 5, 3], ['Sat – Long Run', 6, 5]];
+    const hit = d => MAP.find(([n, o]) => String(d.name).startsWith(n) && d.dow === o);
+    if (!prog.days.length || !prog.days.every(hit)) return;
+    prog.days.forEach(d => {
+      const to = hit(d)[2];
+      d.dow = to;
+      d.name = WEEKDAYS[to] + d.name.slice(3);
+      (d.exercises || []).forEach(e => { if (typeof e.load === 'string') e.load = e.load.replace('than Mon)', 'than Tue)'); });
+    });
+    prog.days.sort((a, b) => a.dow - b.dow);
+    prog.id = 'hybrid-bw-v2';
+  }
+  /** Move the built-in v2 plan (one leg day) to v3 (legs twice a week + plyometrics). The old plan is kept in
+   *  programPrev and the player is asked once, so any edits they made can be restored with one tap.
+   *  A coach-imported or custom plan is never touched. */
+  function migratePlanV3(out) {
+    const prog = out.program;
+    if (!prog || prog.id !== 'hybrid-bw-v2' || prog.keep || !Array.isArray(prog.days) || !prog.days.length) return;
+    const V2 = ['Mon – Easy Run', 'Tue – Upper A', 'Wed – HYBRID MISSION', 'Thu – Upper B', 'Fri – Long Run', 'Sat – Lower'];
+    if (!prog.days.every(d => V2.some(n => String(d.name).startsWith(n)))) return;
+    out.programPrev = prog;
+    out.program = JSON.parse(JSON.stringify(DEFAULT_PROGRAM));
+    out.planNotice = 'v4';
+  }
+  /** v3 (home strength) → v4 (park strength + Nordic curls), same rules as above. If this load already came
+   *  from v2 the older plan stays in programPrev, so "Restore old plan" goes back to what the player had. */
+  function migratePlanV4(out) {
+    const prog = out.program;
+    if (!prog || prog.id !== 'hybrid-bw-v3' || prog.keep || !Array.isArray(prog.days) || !prog.days.length) return;
+    const V3 = ['Mon – Easy Run', 'Tue – Strength A', 'Wed – HYBRID MISSION', 'Thu – Strength B', 'Fri – Long Run', 'Sat – Strength C'];
+    if (!prog.days.every(d => V3.some(n => String(d.name).startsWith(n)))) return;
+    if (!out.programPrev) out.programPrev = prog;
+    out.program = JSON.parse(JSON.stringify(DEFAULT_PROGRAM));
+    out.planNotice = 'v4';
   }
   /** touch=false for bookkeeping writes (seen level etc.) that shouldn't count as new data for sync. */
   function save(touch = true) {
     if (touch) S.updatedAt = Date.now();
     try { localStorage.setItem(STORE_KEY, JSON.stringify(S)); }
-    catch (e) { toast('⚠ Could not save — storage full?'); }
+    catch (e) { toast("Couldn't save: this device's storage is full. Export a backup, then clear old site data."); }
     if (touch) scheduleSync();
   }
   const day = k => (S.days[k] ||= {});
@@ -222,11 +302,38 @@
     if (isTrainingDay(k)) {
       q.push({ id: 'workout', label: `Clear today's Dungeon${todayMission(k) ? ': ' + todayMission(k) : ''}`, target: 1, value: workoutsOn(k).length ? 1 : 0, stat: 'STR', auto: true });
     } else {
-      q.push({ id: 'mobility', label: 'Recovery: 10 min mobility / stretch', target: 1, value: (d.mobility || workoutsOn(k).length) ? 1 : 0, stat: 'AGI', toggle: true });
+      q.push({ id: 'mobility', label: 'Recovery: 10 min of mobility or stretching', target: 1, value: (d.mobility || workoutsOn(k).length) ? 1 : 0, stat: 'AGI', toggle: true });
     }
     q.forEach(x => { x.done = x.target > 0 && x.value >= x.target; });
     return q;
   }
+  /** 'run', 'strength' or 'rest': picks which tagged lines of the daily schedule apply. */
+  function dayType(k) {
+    if (!isTrainingDay(k)) return 'rest';
+    const d = S.program.days.find(x => x.dow === parseKey(k).getDay());
+    if (!d || !d.exercises.length) return 'strength';
+    return d.exercises[0].type === 'cardio' ? 'run' : 'strength';
+  }
+  /** Today's schedule: lines for this day type, shifted with the wake-time ramp, in time order. */
+  function routineFor(k) {
+    const toMin = t => { const [h, m] = t.split(':').map(Number); return h * 60 + m; };
+    const toHM = m => { m = ((m % 1440) + 1440) % 1440; return pad(Math.floor(m / 60)) + ':' + pad(m % 60); };
+    const type = dayType(k);
+    let lines = String(S.routine || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean).map(l => {
+      const m = l.match(/^(\d\d:\d\d)\s*(?:\[([a-z,\s]+)\])?\s*(.*)$/i);
+      if (!m) return { t: '', text: l, tags: null };
+      return { t: m[1], text: m[3], tags: m[2] ? m[2].toLowerCase().split(',').map(x => x.trim()) : null };
+    }).filter(x => !x.tags || x.tags.includes(type));
+    // While ramping the wake time, slide the whole day (incl. bedtime) so sleep stays 8 h+.
+    const first = lines.find(x => x.t);
+    const shift = first ? toMin(wakeTime(k)) - toMin(first.t) : 0;
+    if (shift) lines = lines.map(x => (x.t ? { ...x, t: toHM(toMin(x.t) + shift) } : x));
+    lines.sort((a, b) => (a.t && b.t ? toMin(a.t) - toMin(b.t) : 0));
+    return { lines, shift, type };
+  }
+  /** When today's mission is planned, from the schedule line that mentions it. */
+  const missionTime = k => (routineFor(k).lines.find(x => x.t && /today's mission/i.test(x.text)) || {}).t || '';
+
   function todayMission(k) {
     const dow = parseKey(k).getDay();
     const d = S.program.days.find(x => x.dow === dow);
@@ -260,7 +367,7 @@
     if (y < S.startDate) return null;
     if (dayCleared(y)) return null;
     const d = S.days[k] || {};
-    return { id: 'penalty', label: 'PENALTY: 20 min brisk walk', sub: 'Yesterday\'s quests were not cleared.', done: !!d.penalty };
+    return { id: 'penalty', label: 'Penalty: 20 min brisk walk', sub: 'Issued because yesterday\'s quests weren\'t all cleared.', done: !!d.penalty };
   }
 
   /** Derive everything game-related from raw logs. */
@@ -291,7 +398,7 @@
       let x = 30; const prs = [];
       let sets = 0, minutes = 0;
       (w.exercises || []).forEach(e => {
-        const key = e.name.trim().toLowerCase();
+        const key = exKey(e.name);
         if (!key) return;
         if (e.type === 'cardio') { minutes += num(e.min); return; }
         // Loaded sets score by estimated 1RM; bodyweight sets score by max reps (tracked separately).
@@ -363,11 +470,14 @@
     return (+m[1] + inc) + (m[2] ? '–' + (+m[2] + inc) : '') + m[3];
   }
 
+  // Renamed exercises keep their history: old name → current name (lower case).
+  const EX_ALIASES = { 'inverted table row': 'inverted row' };
+  const exKey = name => { const k = String(name || '').trim().toLowerCase(); return EX_ALIASES[k] || k; };
   function lastPerformance(name, beforeDate = '9999') {
-    const key = name.trim().toLowerCase();
+    const key = exKey(name);
     const ws = S.workouts.filter(w => w.date <= beforeDate).sort((a, b) => (b.date + b.id).localeCompare(a.date + a.id));
     for (const w of ws) {
-      const e = (w.exercises || []).find(x => x.name.trim().toLowerCase() === key);
+      const e = (w.exercises || []).find(x => exKey(x.name) === key);
       if (e) return { date: w.date, e };
     }
     return null;
@@ -534,6 +644,10 @@ ${p.notes}
 
   const sortBests = best => Object.values(best).sort((a, b) => (a.bw - b.bw) || (b.score - a.score));
 
+  // Name file actions by what will actually happen on this device.
+  const CAN_SHARE = (() => { try { return !!(navigator.canShare && navigator.canShare({ files: [new File([''], 'a.txt', { type: 'text/plain' })] })); } catch { return false; } })();
+  const SHARE_VERB = CAN_SHARE ? 'Share' : 'Download';
+
   async function shareOrDownload(filename, text) {
     const blob = new Blob([text], { type: 'text/plain' });
     try {
@@ -550,24 +664,44 @@ ${p.notes}
     a.download = filename;
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 2000);
-    toast(`Saved ${filename}`);
+    toast(`Downloaded ${filename}`);
   }
   async function copyText(text) {
     try { await navigator.clipboard.writeText(text); toast('Copied to clipboard'); }
-    catch { toast('Copy failed — use Share/Download instead'); }
+    catch { toast(`Couldn't copy. Use ${SHARE_VERB} instead.`); }
   }
 
   // ------------------------------------------------------------------ modal & toast
   const modalQueue = [];
-  function sys(html, actions = [{ label: 'Confirm', primary: true }]) {
-    return new Promise(resolve => { modalQueue.push({ html, actions, resolve }); if (modalQueue.length === 1) showModal(); });
+  function sys(html, actions = [{ label: 'OK', primary: true }], opts = {}) {
+    return new Promise(resolve => { modalQueue.push({ html, actions, resolve, cls: opts.cls || '' }); if (modalQueue.length === 1) showModal(); });
+  }
+  const reduceMotion = () => window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /** Count a "+N XP" figure up from zero: the payoff of the dungeon-clear moment. */
+  function countUp(el) {
+    const to = +el.dataset.count || 0, suffix = el.dataset.suffix || '';
+    if (reduceMotion() || !to) { el.textContent = `+${to}${suffix}`; return; }
+    const t0 = performance.now(), dur = 900, delay = 250;
+    const step = now => {
+      const t = Math.min(1, Math.max(0, (now - t0 - delay) / dur));
+      el.textContent = `+${Math.round(to * (1 - Math.pow(1 - t, 3)))}${suffix}`;
+      if (t < 1 && el.isConnected) requestAnimationFrame(step);
+    };
+    el.textContent = `+0${suffix}`;
+    requestAnimationFrame(step);
   }
   function showModal() {
     const m = modalQueue[0];
     if (!m) { $('#modalWrap').hidden = true; return; }
     $('#modalBody').innerHTML = m.html;
+    $('#modalWrap .modal').className = 'modal' + (m.cls ? ' ' + m.cls : '');
+    document.querySelectorAll('#modalBody [data-count]').forEach(countUp);
     $('#modalActions').innerHTML = m.actions.map((a, i) => `<button class="btn ${a.primary ? 'primary' : ''} ${a.danger ? 'danger' : ''}" data-mi="${i}">${esc(a.label)}</button>`).join('');
     $('#modalWrap').hidden = false;
+    // Move focus into the dialog so keyboard and screen-reader users land on its actions.
+    // Destructive dialogs focus the safe choice, so a stray Enter never deletes anything.
+    const focusBtn = m.actions.some(x => x.danger) ? $('#modalActions button:not(.danger)') : ($('#modalActions .primary') || $('#modalActions button:last-child'));
+    if (focusBtn && !$('#modalBody textarea')) focusBtn.focus({ preventScroll: true });
     $('#modalActions').onclick = e => {
       const b = e.target.closest('[data-mi]'); if (!b) return;
       const a = m.actions[+b.dataset.mi];
@@ -584,10 +718,59 @@ ${p.notes}
     clearTimeout(toastTimer); toastTimer = setTimeout(() => t.remove(), 2400);
   }
 
+  // ------------------------------------------------------------------ rest timer
+  // Lives outside #view (re-renders never touch it) and floats above the tab bar.
+  const fmtClock = sec => { sec = Math.max(0, Math.ceil(sec)); return sec >= 60 ? `${Math.floor(sec / 60)}:${pad(sec % 60)}` : `${sec} s`; };
+  /** Rest length from the plan line ("rest 90 s", "rest 2 min"); 90 s when unknown. */
+  function restSecs(e) {
+    const m = String(e.plan || '').match(/rest\s+(\d+(?:\.\d+)?)\s*(s|sec|min|m)\b/i);
+    if (!m) return 90;
+    return Math.round(num(m[1]) * (/^m/i.test(m[2]) ? 60 : 1)) || 90;
+  }
+  let rest = null;
+  function restEl() {
+    let el = document.getElementById('restPill');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'restPill'; el.className = 'rest-pill'; el.setAttribute('role', 'timer');
+      el.innerHTML = '<i class="rest-fill"></i><span class="rest-label">Rest</span><b class="rest-time num"></b><button class="btn sm" data-r="add">+15 s</button><button class="btn sm ghost" data-r="stop" aria-label="Stop rest timer">✕</button>';
+      el.addEventListener('click', e => {
+        const b = e.target.closest('[data-r]'); if (!b || !rest) return;
+        if (b.dataset.r === 'add') { rest.end += 15000; rest.total += 15; tickRest(); } else stopRest();
+      });
+      document.body.appendChild(el);
+    }
+    return el;
+  }
+  function startRest(sec) {
+    clearInterval(rest && rest.timer);
+    rest = { end: Date.now() + sec * 1000, total: sec, timer: setInterval(tickRest, 250) };
+    const el = restEl(); el.classList.remove('out'); el.hidden = false;
+    tickRest();
+  }
+  function tickRest() {
+    if (!rest) return;
+    const left = (rest.end - Date.now()) / 1000;
+    const el = restEl();
+    el.querySelector('.rest-time').textContent = fmtClock(left);
+    el.querySelector('.rest-fill').style.transform = `scaleX(${Math.max(0, left / rest.total)})`;
+    if (left <= 0) {
+      stopRest();
+      if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+      toast('Rest over. Start your next set.');
+    }
+  }
+  function stopRest() {
+    if (!rest) return;
+    clearInterval(rest.timer); rest = null;
+    const el = document.getElementById('restPill');
+    if (el) { el.classList.add('out'); setTimeout(() => { if (!rest) el.hidden = true; }, 200); }
+  }
+
   function checkProgressEvents() {
     const D = derive();
     if (D.level > S.seenLevel) {
-      sys(`<h3>LEVEL UP!</h3><div class="big">Lv. ${D.level}</div><p class="center muted">All stats have grown. Keep clearing quests.</p>`);
+      sys(`<h3>LEVEL UP!</h3><div class="big">Level ${D.level}</div><p class="center muted">All stats have grown. Keep clearing quests.</p>`);
     }
     if (D.rank.r !== S.seenRank && RANKS.findIndex(r => r.r === D.rank.r) > RANKS.findIndex(r => r.r === S.seenRank)) {
       sys(`<h3>RANK UP</h3><div class="big">${D.rank.r}-RANK</div><p class="center">New title acquired: <b class="violet">${esc(D.rank.title)}</b></p>`);
@@ -597,19 +780,61 @@ ${p.notes}
     const today = dkey();
     if (S.onboarded && S.seenPenalty !== today && penaltyFor(today)) {
       S.seenPenalty = today;
-      sys(`<h3 class="red">PENALTY QUEST</h3><p>Yesterday's daily quests were not completed.</p><p>A penalty quest has been issued: <b>20 minutes of brisk walking</b> today.</p><p class="small muted">Missing a day is fine — consistency over perfection. Just get back on track.</p>`, [{ label: 'Accept', primary: true }]);
+      sys(`<h3 class="red">PENALTY QUEST</h3><p>Yesterday's daily quests were not completed.</p><p>A penalty quest has been issued: <b>20 minutes of brisk walking</b> today.</p><p class="small muted">Missing a day is fine. Consistency matters more than perfection, so just get back on track.</p>`, [{ label: 'Accept', primary: true }]);
     }
     save(false);
   }
 
   // ------------------------------------------------------------------ views
+  /** Re-draw the current page in place. Keeps the scroll position, so ticking a quest
+   *  halfway down the page doesn't throw you back to the top. Use go() to change page. */
   function render() {
-    document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+    document.querySelectorAll('#tabs button').forEach(b => {
+      const on = b.dataset.tab === tab;
+      b.classList.toggle('active', on);
+      if (on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+    });
     const D = derive();
-    $('#topMeta').innerHTML = `Lv <b>${D.level}</b> · ${D.rank.r}-Rank<br>Week ${Math.max(0, Math.min(programWeek(), 99))}/${PROGRAM_WEEKS}`;
+    $('#topMeta').innerHTML = `Level <b>${D.level}</b><br>Week ${Math.max(0, Math.min(programWeek(), 99))} of ${PROGRAM_WEEKS}`;
+    const y = window.scrollY;
+    $('#view').innerHTML = ({ status: viewStatus, quests: viewQuests, train: viewTrain, plan: viewPlan, records: viewRecords, profile: viewProfile })[tab](D);
+    window.scrollTo({ top: y });
+  }
+
+  // Page order drives the slide direction of the page transition (profile sits "behind" status).
+  const PAGE_ORDER = ['profile', 'status', 'quests', 'train', 'plan', 'records'];
+  /** Navigate to a page: slide the new page in from the side it lives on, start at the top. */
+  function go(next) {
+    const prev = tab;
+    tab = next; planEdit = false;
     const v = $('#view');
-    v.innerHTML = ({ status: viewStatus, quests: viewQuests, train: viewTrain, plan: viewPlan, records: viewRecords, profile: viewProfile })[tab](D);
+    render();
     window.scrollTo({ top: 0 });
+    if (prev === next) return;
+    const dir = PAGE_ORDER.indexOf(next) > PAGE_ORDER.indexOf(prev) ? 'fwd' : 'back';
+    v.classList.remove('enter-fwd', 'enter-back');
+    void v.offsetWidth; // restart the animation if the user taps quickly
+    v.classList.add('enter-' + dir);
+  }
+  $('#view').addEventListener('animationend', e => { if (e.target.id === 'view') e.target.classList.remove('enter-fwd', 'enter-back'); });
+
+  /** What today asks of the player: the hero of the Status page. */
+  function missionFor(k) {
+    const wk = programWeek(k);
+    if (wk < 1) return { kind: 'pre', title: 'Program starts soon', detail: `Week 1 begins ${fmtDate(S.startDate)}. Use the time to finish your profile.` };
+    const idx = S.program.days.findIndex(d => d.dow === parseKey(k).getDay());
+    if (!isTrainingDay(k) || idx < 0) return { kind: 'rest', title: 'Active recovery', detail: '30–45 min walk and 10 min of mobility' };
+    const pd = S.program.days[idx];
+    const exs = pd.exercises.map(e => prescribe(e, Math.min(wk, PROGRAM_WEEKS)));
+    const lead = exs.find(e => e.type === 'cardio');
+    const detail = lead ? `${lead.name}: ${lead.reps}` : `${exs.length} exercises, starting with ${exs[0] ? exs[0].name : 'your first lift'}`;
+    const kind = workoutsOn(k).length ? 'done' : S.draft ? 'draft' : 'train';
+    // Keep the headline short: "Strength B: Pull + Push (park, upper only)" → title + "Park, upper only." in the detail.
+    const full = todayMission(k) || pd.name;
+    const paren = full.match(/^(.*?)\s*\(([^)]+)\)\s*$/);
+    const title = paren ? paren[1] : full;
+    const tag = paren ? paren[2].charAt(0).toUpperCase() + paren[2].slice(1) + '. ' : '';
+    return { kind, title, detail: tag + detail, idx };
   }
 
   function viewStatus(D) {
@@ -622,50 +847,58 @@ ${p.notes}
     const focus = WEEK_FOCUS[wk - 1];
     const totalSets = Object.values(D.wxp).reduce((a, b) => a + b.sets, 0);
     const weightPts = Object.entries(S.days).filter(([, d]) => d.weight).sort(([a], [b]) => a.localeCompare(b)).slice(-30).map(([k, d]) => [k, num(d.weight)]);
+    const m = missionFor(today);
+    const xpToday = workoutsOn(today).reduce((a, w) => a + ((D.wxp[w.id] || {}).xp || 0), 0);
+    const cta = {
+      pre: `<button class="btn primary" data-act="go" data-tab="profile">Finish profile</button>`,
+      rest: `<button class="btn primary" data-act="go" data-tab="quests">Open quests</button>`,
+      train: `<button class="btn primary" data-act="start" data-day="${m.idx}">Start mission</button>`,
+      draft: `<button class="btn primary" data-act="go" data-tab="train">Resume workout</button>`,
+      done: `<span class="mission-done">Cleared, +${xpToday} XP</span>`,
+    }[m.kind];
+    const grown = Object.values(D.stats).some(v => v !== 10);
     return `
-      <section class="panel">
-        <div class="panel-title">Status Window <button class="btn sm ghost" data-act="go" data-tab="profile">Profile ›</button></div>
-        <div class="player">
-          <div class="rank-badge r-${D.rank.r}"><span>${D.rank.r}</span></div>
-          <div>
-            <div class="player-name">${esc(p.name || 'Player')}</div>
-            <div class="player-title">Title: ${esc(D.rank.title)}</div>
-            <div class="lvl">LV. <b>${D.level}</b> &nbsp; ${D.into} / ${D.need} XP</div>
-            <div class="bar"><i style="width:${pct}%"></i></div>
+      <section class="panel system mission">
+        <div class="mission-day">Today, ${WEEKDAYS[parseKey(today).getDay()]}${wk >= 1 && wk <= PROGRAM_WEEKS ? `, week ${wk}` : ''}${(m.kind === 'train' || m.kind === 'draft') && missionTime(today) ? `, planned for ${missionTime(today)}` : ''}</div>
+        <h2 class="mission-title">${esc(m.title)}</h2>
+        <p class="mission-detail">${esc(m.detail)}</p>
+        <div class="mission-foot">
+          ${cta}
+          <button class="link" data-act="go" data-tab="quests">${done} of ${qs.length} quests</button>
+        </div>
+      </section>
+
+      <section class="strip">
+        <div class="rank-badge sm r-${D.rank.r}" aria-label="${D.rank.r}-rank"><span>${D.rank.r}</span></div>
+        <div class="strip-main">
+          <div class="strip-head">
+            <span class="sys-level">Level ${D.level}</span>
+            <span class="muted small">${esc(p.name || 'Player')}, ${esc(D.rank.title)}</span>
           </div>
+          <div class="bar" role="progressbar" aria-label="XP to next level" aria-valuenow="${D.into}" aria-valuemax="${D.need}"><i style="width:${pct}%"></i></div>
+          <div class="small muted num">${D.into} of ${D.need} XP to level ${D.level + 1}</div>
         </div>
       </section>
+      <dl class="kpis">
+        <div class="kpi"><dt>Streak</dt><dd>${D.streak}</dd></div>
+        <div class="kpi"><dt>Dungeons</dt><dd>${S.workouts.length}</dd></div>
+        <div class="kpi"><dt>Sets</dt><dd>${totalSets}</dd></div>
+      </dl>
 
-      <section class="panel">
-        <div class="panel-title">Stats <small>total XP ${D.xp}</small></div>
+      <details class="panel stats-wrap" ${grown ? 'open' : ''}>
+        <summary>Stats <small class="muted">${grown ? `${D.xp} XP total` : 'all start at 10 and grow as you log'}</small></summary>
         <div class="stats">
-          ${Object.entries(D.stats).map(([k, v]) => `<div class="stat" title="${esc(STAT_INFO[k])}"><span class="k"><b>${k}</b>${STAT_INFO[k].split(' — ')[0]}</span><span class="v">${v}</span></div>`).join('')}
+          ${Object.entries(D.stats).map(([k, v]) => `<div class="stat" title="${esc(STAT_INFO[k])}"><span class="k">${STAT_INFO[k].split(':')[0]}</span><span class="v num">${v}</span></div>`).join('')}
         </div>
-      </section>
+      </details>
 
       <section class="panel">
-        <div class="kpis">
-          <div class="kpi"><div class="n">${D.streak}</div><div class="l">Streak</div></div>
-          <div class="kpi"><div class="n">${S.workouts.length}</div><div class="l">Dungeons</div></div>
-          <div class="kpi"><div class="n">${totalSets}</div><div class="l">Sets</div></div>
-        </div>
+        <h2 class="panel-title">This week</h2>
+        ${wk < 1 ? `<p>Program starts <b>${fmtDate(S.startDate)}</b>.</p>` : focus ? `<h3 class="sub">Week ${wk}: ${focus.t}</h3><p>${esc(focus.d)}</p>` : `<h3 class="sub">Block complete</h3><p>Export a full report and ask your coach for the next 6-week block.</p>`}
       </section>
 
-      <section class="panel">
-        <div class="panel-title">Today · ${fmtDate(today)} <small>${done}/${qs.length} quests</small></div>
-        <div class="bar"><i style="width:${(done / qs.length) * 100}%"></i></div>
-        <div class="row" style="margin-top:12px">
-          <button class="btn primary" data-act="go" data-tab="quests">Daily Quests</button>
-          <button class="btn" data-act="go" data-tab="train">${isTrainingDay(today) ? 'Enter Dungeon' : 'Log Workout'}</button>
-        </div>
-      </section>
-
-      <section class="panel">
-        <div class="panel-title">Program <small>Week ${wk} of ${PROGRAM_WEEKS}</small></div>
-        ${wk < 1 ? `<div>Program starts <b class="gold">${fmtDate(S.startDate)}</b>. Use the time to finish your profile.</div>` : focus ? `<div><b class="gold">${focus.t}</b> — ${esc(focus.d)}</div>` : `<div><b class="gold">Block complete.</b> Export a full report and ask your coach for the next 6-week block.</div>`}
-      </section>
-
-      ${weightPts.length >= 2 ? `<section class="panel"><div class="panel-title">Body Weight <small>${weightPts[0][1]} → ${weightPts[weightPts.length - 1][1]} kg</small></div>${sparkline(weightPts.map(x => x[1]))}</section>` : ''}
+      ${weightPts.length >= 2 ? `<section class="panel"><h2 class="panel-title">Body weight <small class="num">${weightPts[0][1]} to ${weightPts[weightPts.length - 1][1]} kg</small></h2>${sparkline(weightPts.map(x => x[1]))}</section>` : ''}
+      <button class="btn block quiet" data-act="go" data-tab="profile">Profile and settings</button>
     `;
   }
 
@@ -676,8 +909,8 @@ ${p.notes}
     const path = pts.map((q, i) => (i ? 'L' : 'M') + q[0].toFixed(1) + ' ' + q[1].toFixed(1)).join(' ');
     const last = pts[pts.length - 1];
     return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img" aria-label="Body weight trend">
-      <path d="${path}" fill="none" stroke="var(--cyan)" stroke-width="2" vector-effect="non-scaling-stroke"/>
-      <circle cx="${last[0]}" cy="${last[1]}" r="3.5" fill="var(--gold)"/></svg>`;
+      <path d="${path}" fill="none" stroke="var(--ink)" stroke-width="2" vector-effect="non-scaling-stroke"/>
+      <circle cx="${last[0]}" cy="${last[1]}" r="3.5" fill="var(--reward)"/></svg>`;
   }
 
   function viewQuests() {
@@ -689,29 +922,29 @@ ${p.notes}
     const isToday = k === dkey();
     return `
       <section class="panel">
-        <div class="panel-title">
-          <button class="btn sm ghost" data-act="qday" data-delta="-1">‹</button>
-          <span>Daily Quest · ${isToday ? 'Today' : fmtDate(k)}</span>
-          <button class="btn sm ghost" data-act="qday" data-delta="1" ${isToday ? 'disabled' : ''}>›</button>
-        </div>
-        <p class="small muted" style="margin-top:0">${isTrainingDay(k) ? 'Training day.' : 'Rest day — recovery quest active.'} Each quest: +10 XP. Clear all: +50 XP bonus.</p>
+        <h2 class="panel-title day-nav">
+          <button class="btn sm nav-arrow" data-act="qday" data-delta="-1" aria-label="Previous day">‹</button>
+          <span>${isToday ? "Today's quests" : 'Quests for ' + fmtDate(k)}</span>
+          <button class="btn sm nav-arrow" data-act="qday" data-delta="1" ${isToday ? 'disabled' : ''} aria-label="Next day">›</button>
+        </h2>
+        <p class="small muted lead">${isTrainingDay(k) ? 'Training day.' : 'Rest day, so the recovery quest replaces the workout.'} Each quest is worth 10 XP. Clear them all for a 50 XP bonus.</p>
         ${qs.map(q => questRow(q, k)).join('')}
-        ${pen ? `<div class="quest penalty ${pen.done ? 'done' : ''}">
-            <div class="check">${pen.done ? '✓' : ''}</div>
+        ${pen ? `<label class="quest tap penalty ${pen.done ? 'done' : ''} ${popCls('penalty', pen.done)}">
+            <div class="check" aria-hidden="true">${pen.done ? '✓' : ''}</div>
             <div><div class="q-label">${pen.label}</div><div class="q-sub">${pen.sub} +20 XP</div></div>
-            <input type="checkbox" data-field="penalty" data-day="${k}" ${pen.done ? 'checked' : ''} aria-label="Penalty complete">
-          </div>` : ''}
+            <input class="sr-only" type="checkbox" data-field="penalty" data-day="${k}" ${pen.done ? 'checked' : ''}>
+          </label>` : ''}
       </section>
-      ${allDone ? `<section class="panel center"><b class="gold mono">◆ DAILY QUEST CLEARED ◆</b><div class="small muted">Rewards applied: +${qs.length * 10 + 50} XP</div></section>` : ''}
+      ${allDone ? `<section class="panel system center"><div class="sys-line">Daily quests cleared</div><div class="small muted">+${qs.length * 10 + 50} XP added</div></section>` : ''}
       ${habitsPanel(k)}
       ${isToday ? routinePanel() : ''}
       <section class="panel">
-        <div class="panel-title">Body & Fuel <small>optional</small></div>
+        <h2 class="panel-title">Body and food <small>optional</small></h2>
         <div class="grid2">
           <label class="f"><span>Body weight (kg)</span><input inputmode="decimal" data-field="weight" data-day="${k}" value="${esc(d.weight || '')}"></label>
-          <label class="f"><span>Calories (kcal)${S.targets.calories ? ' · target ' + S.targets.calories : ''}</span><input inputmode="numeric" data-field="calories" data-day="${k}" value="${esc(d.calories || '')}"></label>
+          <label class="f"><span>Calories (kcal)${S.targets.calories ? ', target ' + S.targets.calories : ''}</span><input inputmode="numeric" data-field="calories" data-day="${k}" value="${esc(d.calories || '')}"></label>
         </div>
-        <label class="f"><span>Day notes (mood, stress, soreness, food)</span><textarea data-field="note" data-day="${k}">${esc(d.note || '')}</textarea></label>
+        <label class="f"><span>Notes for the day (mood, stress, soreness, food)</span><textarea data-field="note" data-day="${k}">${esc(d.note || '')}</textarea></label>
       </section>`;
   }
 
@@ -720,48 +953,47 @@ ${p.notes}
     if (!hs.length) return '';
     const n = hs.filter(h => h.done).length;
     return `<section class="panel">
-      <div class="panel-title">Routine Quests <small>${n}/${hs.length} · +10 each · all: +30</small></div>
-      ${hs.map(h => { const st = habitStreak(h.id); return `<label class="quest ${h.done ? 'done' : ''}">
-        <div class="check">${h.done ? '✓' : ''}</div>
-        <div><div class="q-label">${esc(h.label)}</div><div class="q-sub">${h.stat}${st ? ` · 🔥 ${st}-day streak` : ''}</div></div>
-        <input type="checkbox" data-field="h_${esc(h.id)}" data-day="${k}" ${h.done ? 'checked' : ''}>
+      <h2 class="panel-title">Routine <small>${n} of ${hs.length} done</small></h2>
+      <p class="small muted lead">10 XP each, plus 30 XP when you clear the whole routine.</p>
+      ${hs.map(h => { const st = habitStreak(h.id); return `<label class="quest tap ${h.done ? 'done' : ''} ${popCls('h_' + h.id, h.done)}">
+        <div class="check" aria-hidden="true">${h.done ? '✓' : ''}</div>
+        <div><div class="q-label">${esc(h.label)}</div>${st ? `<div class="q-sub">🔥 ${st}-day streak</div>` : ''}</div>
+        <input class="sr-only" type="checkbox" data-field="h_${esc(h.id)}" data-day="${k}" ${h.done ? 'checked' : ''}>
       </label>`; }).join('')}
-      ${n === hs.length ? '<div class="center gold mono small" style="margin-top:8px">◆ ROUTINE CLEARED ◆</div>' : ''}
+      ${n === hs.length ? '<div class="sys-line center" style="margin-top:10px">Routine cleared</div>' : ''}
     </section>`;
   }
 
   function routinePanel() {
-    const toMin = t => { const [h, m] = t.split(':').map(Number); return h * 60 + m; };
-    const toHM = m => { m = ((m % 1440) + 1440) % 1440; return pad(Math.floor(m / 60)) + ':' + pad(m % 60); };
-    let lines = String(S.routine || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    const today = dkey();
+    const { lines, shift, type } = routineFor(today);
     if (!lines.length) return '';
-    // While ramping the wake time, slide the whole day (incl. bedtime) so sleep stays 8 h+.
-    const first = lines.find(l => /^\d\d:\d\d/.test(l));
-    const shift = first ? toMin(wakeTime(dkey())) - toMin(first.slice(0, 5)) : 0;
-    if (shift) lines = lines.map(l => (/^\d\d:\d\d/.test(l) ? toHM(toMin(l.slice(0, 5)) + shift) + l.slice(5) : l));
     const now = new Date(); const hm = pad(now.getHours()) + ':' + pad(now.getMinutes());
     let cur = -1;
-    lines.forEach((l, i) => { const t = l.slice(0, 5); if (/^\d\d:\d\d$/.test(t) && t <= hm) cur = i; });
-    const wake = wakeTime(dkey());
-    const sunday = new Date().getDay() === 0;
+    lines.forEach((x, i) => { if (x.t && x.t <= hm) cur = i; });
+    const label = { run: 'Run day', strength: 'Strength day', rest: 'Rest day' }[type];
     return `<section class="panel">
-      <div class="panel-title">Today's Routine <small>wake target ${wake}</small></div>
-      ${shift ? `<p class="small muted" style="margin-top:0">Wake-time ramp: this week's schedule is shifted <b class="gold">${shift > 0 ? '+' : ''}${shift} min</b> (bedtime too) so you keep 8 h sleep.</p>` : ''}
-      ${sunday ? '<p class="small gold" style="margin-top:0">Sunday: no training. Long outdoor walk in the morning sun, weekly review + send the coach report.</p>' : ''}
-      ${lines.map((l, i) => `<div class="stat" style="${i === cur ? 'color:var(--gold);font-weight:700' : i < cur ? 'opacity:.55' : ''}"><span class="mono small">${esc(l.slice(0, 5))}</span><span style="flex:1;margin-left:10px">${esc(l.slice(5).trim())}</span></div>`).join('')}
+      <h2 class="panel-title">Today's schedule <small>${label}, wake by ${wakeTime(today)}</small></h2>
+      ${shift ? `<p class="small muted lead">Your wake time is still moving earlier, so this week's schedule runs ${Math.abs(shift)} min ${shift > 0 ? 'later' : 'earlier'}, bedtime included, to keep 8 h of sleep.</p>` : ''}
+      <ol class="timeline">${lines.map((x, i) => `<li class="${i === cur ? 'now' : i < cur ? 'past' : ''}"${i === cur ? ' aria-current="time"' : ''}><span class="num">${esc(x.t)}</span><span>${esc(x.text)}</span></li>`).join('')}</ol>
     </section>`;
   }
+
+  // The quest the user just completed gets a one-off "cleared" pulse on the next render.
+  let justDone = '';
+  const popCls = (id, done) => (done && id === justDone ? 'pop' : '');
 
   function questRow(q, k) {
     let ctl = '';
     if (q.input) ctl = `<div class="row"><button class="btn sm" data-act="bump" data-field="${q.id}" data-day="${k}" data-step="${q.step}" aria-label="Add ${q.step}">+</button><input inputmode="decimal" data-field="${q.id}" data-day="${k}" value="${q.value || ''}" placeholder="0"></div>`;
-    else if (q.toggle) ctl = `<input type="checkbox" data-field="${q.id}" data-day="${k}" ${q.done ? 'checked' : ''} aria-label="${esc(q.label)}">`;
-    else if (q.auto) ctl = q.done ? '<span class="small green mono">CLEARED</span>' : `<button class="btn sm" data-act="go" data-tab="train">Go</button>`;
-    const sub = q.input ? `${q.value || 0} / ${q.target} ${q.unit} · ${q.stat}` : `${q.stat}`;
-    return `<div class="quest ${q.done ? 'done' : ''}" data-qrow="${q.id}">
-      <div class="check">${q.done ? '✓' : ''}</div>
-      <div><div class="q-label">${esc(q.label)}</div><div class="q-sub">${sub}</div></div>
-      ${ctl}</div>`;
+    else if (q.toggle) ctl = `<input class="sr-only" type="checkbox" data-field="${q.id}" data-day="${k}" ${q.done ? 'checked' : ''}>`;
+    else if (q.auto) ctl = q.done ? '<span class="small cleared">Cleared</span>' : `<button class="btn sm" data-act="go" data-tab="train">Start</button>`;
+    const sub = q.input ? `${q.value || 0} of ${q.target} ${q.unit}` : '';
+    const tag = q.toggle ? 'label' : 'div'; // a toggle row is one big tap target
+    return `<${tag} class="quest ${q.toggle ? 'tap' : ''} ${q.done ? 'done' : ''} ${popCls(q.id, q.done)}" data-qrow="${q.id}">
+      <div class="check" aria-hidden="true">${q.done ? '✓' : ''}</div>
+      <div><div class="q-label">${esc(q.label)}</div>${sub ? `<div class="q-sub num">${sub}</div>` : ''}</div>
+      ${ctl}</${tag}>`;
   }
 
   function newDraft(dayIdx) {
@@ -788,17 +1020,17 @@ ${p.notes}
       const wk = programWeek();
       return `
         <section class="panel">
-          <div class="panel-title">Select Dungeon <small>Week ${wk}${WEEK_FOCUS[wk - 1] ? ' · ' + WEEK_FOCUS[wk - 1].t : ''}</small></div>
-          ${S.program.days.map((d, i) => { const isToday = d.dow === new Date().getDay(); return `<button class="btn block ${isToday ? 'primary' : ''}" style="margin-bottom:8px;text-align:left" data-act="start" data-day="${i}">⚔ ${esc(d.name)} <span class="small" style="opacity:.7">· ${isToday ? "TODAY'S MISSION" : d.exercises.length + ' exercises'}</span></button>`; }).join('')}
-          ${!isTrainingDay(dkey()) ? '<p class="small muted">Today is active recovery: 30–45 min walk + 10 min mobility. Complete it in Quests.</p>' : ''}
-          <button class="btn block ghost" data-act="start" data-day="-1">+ Custom workout</button>
-        </section>
-        <section class="panel small muted">Pre-fills sets from your plan with this week's progression and your last weights. Your in-progress workout is saved automatically, even if you close the app.</section>`;
+          <h2 class="panel-title">Choose a dungeon <small>Week ${wk}${WEEK_FOCUS[wk - 1] ? ': ' + WEEK_FOCUS[wk - 1].t : ''}</small></h2>
+          <p class="small muted lead">Sets are filled in from your plan, with this week's progression and your last weights. A workout in progress is saved as you go, even if you close the app.</p>
+          <div class="day-list">${S.program.days.map((d, i) => { const isToday = d.dow === new Date().getDay(); return `<button class="day-pick ${isToday ? 'today' : ''}" data-act="start" data-day="${i}"><span class="day-name">${esc(d.name)}</span><span class="day-meta">${isToday ? "Today's mission" : d.exercises.length + ' exercises'}</span></button>`; }).join('')}</div>
+          ${!isTrainingDay(dkey()) ? '<p class="small muted">Today is active recovery: a 30–45 min walk and 10 min of mobility. Tick it off in Quests.</p>' : ''}
+          <button class="btn block quiet" data-act="start" data-day="-1">Start a custom workout</button>
+        </section>`;
     }
     const w = S.draft;
     return `
       <section class="panel">
-        <div class="panel-title">Dungeon in Progress <button class="btn sm danger" data-act="discard">Abandon</button></div>
+        <h2 class="panel-title">Dungeon in progress <button class="btn sm danger" data-act="discard">Abandon</button></h2>
         <div class="grid2">
           <label class="f"><span>Session</span><input data-draft="dayName" value="${esc(w.dayName)}"></label>
           <label class="f"><span>Date</span><input type="date" data-draft="date" value="${esc(w.date)}" max="${dkey()}"></label>
@@ -806,16 +1038,16 @@ ${p.notes}
       </section>
       ${w.exercises.map((e, i) => exerciseCard(e, i)).join('')}
       <div class="row" style="margin-bottom:14px">
-        <button class="btn" data-act="addex" data-type="strength">+ Lift</button>
-        <button class="btn" data-act="addex" data-type="cardio">+ Cardio</button>
+        <button class="btn" data-act="addex" data-type="strength">Add a lift</button>
+        <button class="btn" data-act="addex" data-type="cardio">Add cardio</button>
       </div>
       <section class="panel">
-        <div class="panel-title">Debrief <small>+10 XP</small></div>
+        <h2 class="panel-title">Debrief <small>+10 XP</small></h2>
         <div class="grid3">
           ${['energy', 'difficulty', 'sleepQ'].map(f => `<label class="f"><span>${{ energy: 'Energy', difficulty: 'Difficulty', sleepQ: 'Sleep quality' }[f]} 1–10</span><select data-draft="${f}"><option value="">–</option>${Array.from({ length: 10 }, (_, n) => `<option ${String(w[f]) === String(n + 1) ? 'selected' : ''}>${n + 1}</option>`).join('')}</select></label>`).join('')}
         </div>
-        <label class="row" style="margin:6px 0 10px"><input type="checkbox" data-draft="pain" ${w.pain ? 'checked' : ''}> <span>Any pain or discomfort?</span></label>
-        ${w.pain ? `<label class="f"><span>Where / what kind? (sharp, dull, tight, joint…)</span><input data-draft="painNote" value="${esc(w.painNote)}"></label>` : ''}
+        <label class="row check-row"><input type="checkbox" data-draft="pain" ${w.pain ? 'checked' : ''}> <span>I felt pain or discomfort</span></label>
+        ${w.pain ? `<label class="f"><span>Where, and what kind? (sharp, dull, tight, in a joint)</span><input data-draft="painNote" value="${esc(w.painNote)}"></label>` : ''}
         <label class="f"><span>Notes (how it felt, what was hard)</span><textarea data-draft="notes">${esc(w.notes)}</textarea></label>
         <button class="btn primary block" data-act="finish">Clear Dungeon</button>
       </section>`;
@@ -824,18 +1056,18 @@ ${p.notes}
   function exerciseCard(e, i) {
     const body = e.type === 'cardio'
       ? `<div class="grid2"><label class="f"><span>Minutes</span><input inputmode="decimal" data-ex="${i}" data-k="min" value="${esc(e.min)}"></label><label class="f"><span>Distance (km, optional)</span><input inputmode="decimal" data-ex="${i}" data-k="dist" value="${esc(e.dist)}"></label></div>`
-      : `<div class="set-row small muted"><span class="n">Set</span><span class="center">+kg (blank = BW)</span><span class="center">reps / sec</span><span></span></div>
+      : `<div class="set-row set-head"><span class="n">Set</span><span>Added kg</span><span>Reps or sec</span><span></span></div>
          ${e.sets.map((s, j) => `<div class="set-row"><span class="n">${j + 1}</span>
-            <input inputmode="decimal" data-ex="${i}" data-set="${j}" data-k="w" value="${esc(s.w)}" placeholder="BW" aria-label="Set ${j + 1} weight">
-            <input inputmode="numeric" data-ex="${i}" data-set="${j}" data-k="r" value="${esc(s.r)}" placeholder="reps" aria-label="Set ${j + 1} reps">
-            <button class="x-btn" data-act="delset" data-ex="${i}" data-set="${j}" aria-label="Remove set">×</button></div>`).join('')}
-         <button class="btn sm" data-act="addset" data-ex="${i}">+ Set</button>`;
+            <input inputmode="decimal" data-ex="${i}" data-set="${j}" data-k="w" value="${esc(s.w)}" placeholder="Body" aria-label="Set ${j + 1} added weight in kg, blank for bodyweight">
+            <input inputmode="numeric" data-ex="${i}" data-set="${j}" data-k="r" value="${esc(s.r)}" placeholder="–" aria-label="Set ${j + 1} reps or seconds">
+            <button class="x-btn" data-act="delset" data-ex="${i}" data-set="${j}" aria-label="Remove set ${j + 1}">×</button></div>`).join('')}
+         <div class="row"><button class="btn sm" data-act="addset" data-ex="${i}">Add set</button><span class="spacer"></span><button class="btn sm ghost-line" data-act="rest" data-sec="${restSecs(e)}" aria-label="Start ${fmtClock(restSecs(e))} rest timer">Rest ${fmtClock(restSecs(e))}</button></div>`;
     return `<div class="ex">
-      <div class="ex-head"><input data-ex="${i}" data-k="name" value="${esc(e.name)}" placeholder="Exercise name"><button class="x-btn" data-act="delex" data-ex="${i}" aria-label="Remove exercise">×</button></div>
-      ${e.plan ? `<div class="ex-plan">PLAN: ${esc(e.plan)}</div>` : ''}
-      ${e.hint ? `<div class="ex-plan" style="color:var(--gold)">${esc(e.hint)}</div>` : ''}
+      <div class="ex-head"><input data-ex="${i}" data-k="name" value="${esc(e.name)}" placeholder="Exercise name"><button class="x-btn" data-act="delex" data-ex="${i}" aria-label="Remove ${esc(e.name || 'exercise')}">×</button></div>
+      ${e.plan ? `<div class="ex-plan">Plan: ${esc(e.plan)}</div>` : ''}
+      ${e.hint ? `<div class="ex-plan hint">${esc(e.hint)}</div>` : ''}
       ${body}
-      <input class="small" style="margin-top:6px" data-ex="${i}" data-k="note" value="${esc(e.note || '')}" placeholder="Note (e.g. felt easy, left knee tight)">
+      <input class="small" style="margin-top:6px" data-ex="${i}" data-k="note" value="${esc(e.note || '')}" placeholder="Note, e.g. felt easy, left knee tight">
     </div>`;
   }
 
@@ -846,25 +1078,25 @@ ${p.notes}
     const f = WEEK_FOCUS[wk - 1];
     return `
       <section class="panel">
-        <div class="panel-title">6-Week Program <button class="btn sm" data-act="planedit">Edit</button></div>
-        <div class="week-tabs">${Array.from({ length: PROGRAM_WEEKS }, (_, i) => `<button class="chip ${wk === i + 1 ? 'on' : ''} ${cur === i + 1 ? 'now' : ''}" data-act="pweek" data-w="${i + 1}">W${i + 1}</button>`).join('')}</div>
-        <div><b class="gold">Week ${wk}: ${f.t}</b> — ${esc(f.d)}</div>
-        <div class="small mono" style="margin-top:6px">Daily steps target: <b class="cyan">${Array.isArray(S.program.steps) && S.program.steps.length ? S.program.steps[Math.min(wk, S.program.steps.length) - 1] : S.targets.steps}</b></div>
+        <h2 class="panel-title">6-week program <button class="btn sm" data-act="planedit">Edit plan</button></h2>
+        <div class="week-tabs">${Array.from({ length: PROGRAM_WEEKS }, (_, i) => `<button class="chip ${wk === i + 1 ? 'on' : ''} ${cur === i + 1 ? 'now' : ''}" data-act="pweek" data-w="${i + 1}" aria-label="Week ${i + 1}${cur === i + 1 ? ', this week' : ''}" ${wk === i + 1 ? 'aria-pressed="true"' : 'aria-pressed="false"'}>${i + 1}</button>`).join('')}</div>
+        <h3 class="sub">Week ${wk}: ${f.t}</h3><p>${esc(f.d)}</p>
+        <div class="small">Daily steps target: <b class="num">${Array.isArray(S.program.steps) && S.program.steps.length ? S.program.steps[Math.min(wk, S.program.steps.length) - 1] : S.targets.steps}</b></div>
         ${S.program.note ? `<p class="small muted">${esc(S.program.note)}</p>` : ''}
       </section>
-      ${S.program.days.map(d => `<section class="panel"><div class="panel-title">${esc(d.name)}</div>
-        ${d.exercises.map(e0 => { const e = prescribe(e0, wk); return `<div class="plan-ex"><div class="name">${esc(e.name)}</div><div class="rx">${e.sets} × ${esc(e.reps)}</div>
-          <div class="meta">${e.rest ? 'Rest ' + esc(e.rest) + ' · ' : ''}${esc(e.load)}${e.notes ? '<br>' + esc(e.notes) : ''}</div></div>`; }).join('')}
+      ${S.program.days.map(d => `<section class="panel"><h2 class="panel-title">${esc(d.name)}</h2>
+        ${d.exercises.map(e0 => { const e = prescribe(e0, wk); return `<div class="plan-ex"><div class="name">${esc(e.name)}</div><div class="rx">${e.type === 'cardio' && num(e.sets) <= 1 ? esc(e.reps) : `${e.sets} × ${esc(e.reps)}`}</div>
+          <div class="meta">${e.rest && e.rest !== '—' ? 'Rest ' + esc(e.rest) + '. ' : ''}${esc(e.load)}${e.notes ? '<br>' + esc(e.notes) : ''}</div></div>`; }).join('')}
       </section>`).join('')}`;
   }
 
   function viewPlanEdit() {
     return `
       <section class="panel">
-        <div class="panel-title">Edit Program <button class="btn sm primary" data-act="planedit">Done</button></div>
-        <p class="small muted">Enter base (Week 1) sets/reps. The app applies the weekly progression automatically. Type "cardio" exercises for time-based work.</p>
+        <h2 class="panel-title">Edit plan <button class="btn sm primary" data-act="planedit">Done</button></h2>
+        <p class="small muted">Enter week 1 sets and reps. The app applies the weekly progression for you. Set the type to cardio for timed work.</p>
         <label class="f"><span>Program note</span><textarea data-pnote>${esc(S.program.note)}</textarea></label>
-        <div class="row wrap"><button class="btn sm" data-act="pasteprog">Import from text</button><button class="btn sm danger" data-act="resetprog">Reset to template</button></div>
+        <div class="row wrap"><button class="btn sm" data-act="pasteprog">Import from text</button><button class="btn sm danger" data-act="resetprog">Reset to built-in plan</button></div>
       </section>
       ${S.program.days.map((d, i) => `<section class="panel">
         <div class="ex-head"><input data-pd="${i}" data-k="name" value="${esc(d.name)}"><button class="x-btn" data-act="delday" data-d="${i}" aria-label="Remove day">×</button></div>
@@ -878,9 +1110,9 @@ ${p.notes}
           <input class="full" data-pd="${i}" data-pe="${j}" data-k="notes" value="${esc(e.notes)}" placeholder="Coaching notes">
           <button class="btn sm danger full" data-act="delpe" data-d="${i}" data-e="${j}">Remove exercise</button>
         </div>`).join('')}
-        <button class="btn sm" style="margin-top:8px" data-act="addpe" data-d="${i}">+ Exercise</button>
+        <button class="btn sm" style="margin-top:8px" data-act="addpe" data-d="${i}">Add exercise</button>
       </section>`).join('')}
-      <button class="btn block" data-act="addday">+ Add training day</button>`;
+      <button class="btn block" data-act="addday">Add training day</button>`;
   }
 
   function viewRecords(D) {
@@ -888,39 +1120,39 @@ ${p.notes}
     const bests = sortBests(D.best);
     return `
       <section class="panel">
-        <div class="panel-title">Send to Coach</div>
-        <p class="small muted" style="margin-top:0">Creates a .txt file — share it straight into the Claude app or save it to Files.</p>
+        <h2 class="panel-title">Send to coach</h2>
+        <p class="small muted lead">Makes a .txt report you can ${CAN_SHARE ? 'share straight into the Claude app or save to Files' : 'attach in the Claude app'}.</p>
         <div class="chips" style="margin-bottom:10px">${[[7, 'Last 7 days'], [14, '14 days'], [0, 'Whole block']].map(([n, l]) => `<button class="chip ${recordsRange === n ? 'on' : ''}" data-act="range" data-n="${n}">${l}</button>`).join('')}</div>
         <div class="row wrap">
-          <button class="btn primary" data-act="report">Share report .txt</button>
-          <button class="btn" data-act="copyreport">Copy</button>
+          <button class="btn primary" data-act="report">${SHARE_VERB} report</button>
+          <button class="btn" data-act="copyreport">Copy report</button>
         </div>
       </section>
 
       <section class="panel">
-        <div class="panel-title">Records <small>e1RM · BW max reps</small></div>
-        ${bests.length ? bests.map(b => `<div class="stat"><span>${esc(b.name)}</span><span class="mono">${b.bw ? `BW × <b class="gold">${b.r}</b> reps` : `${b.w}×${b.r} · <b class="gold">${b.score.toFixed(1)}</b>`}</span></div>`).join('') : '<p class="muted small">Log some lifts to set records.</p>'}
+        <h2 class="panel-title">Personal records</h2>
+        ${bests.length ? `<p class="small muted lead">Bodyweight moves show your most reps in one set. Loaded lifts show your estimated one-rep max.</p>${bests.map(b => `<div class="stat"><span>${esc(b.name)}</span><span class="num">${b.bw ? `<b class="reward">${b.r}</b> reps` : `${b.w} kg × ${b.r}, est. max <b class="reward">${b.score.toFixed(1)} kg</b>`}</span></div>`).join('')}` : '<p class="muted small">Your best sets show up here after your first workout.</p>'}
       </section>
 
       <section class="panel">
-        <div class="panel-title">Dungeon Log <small>${ws.length} cleared</small></div>
+        <h2 class="panel-title">Dungeon log <small>${ws.length} cleared</small></h2>
         ${ws.length ? ws.map(w => {
           const info = D.wxp[w.id] || { xp: 0, prs: [] };
           return `<div class="log-item">
-            <div class="row"><b>${esc(w.dayName)}</b>${info.prs.length ? '<span class="tag pr">PR</span>' : ''}${w.pain ? '<span class="tag pain">PAIN</span>' : ''}<span class="spacer"></span><span class="mono small gold">+${info.xp} XP</span></div>
-            <div class="small muted">${fmtDate(w.date)} · ${info.sets} sets${info.minutes ? ' · ' + info.minutes + ' min' : ''}</div>
+            <div class="row"><b>${esc(w.dayName)}</b>${info.prs.length ? '<span class="tag pr">Record</span>' : ''}${w.pain ? '<span class="tag pain">Pain</span>' : ''}<span class="spacer"></span><span class="num small reward">+${info.xp} XP</span></div>
+            <div class="small muted">${fmtDate(w.date)}, ${info.sets} sets${info.minutes ? ', ' + info.minutes + ' min cardio' : ''}</div>
             <details><summary class="small muted">View log</summary><pre>${esc(workoutTxt(w))}</pre></details>
             <div class="row wrap" style="margin-top:6px">
-              <button class="btn sm" data-act="sharew" data-id="${w.id}">Share .txt</button>
+              <button class="btn sm" data-act="sharew" data-id="${w.id}">${SHARE_VERB}</button>
               <button class="btn sm" data-act="copyw" data-id="${w.id}">Copy</button>
               <button class="btn sm" data-act="editw" data-id="${w.id}">Edit</button>
               <button class="btn sm danger" data-act="delw" data-id="${w.id}">Delete</button>
             </div></div>`;
-        }).join('') : '<p class="muted small">No dungeons cleared yet.</p>'}
+        }).join('') : '<p class="muted small">No workouts logged yet.</p><button class="btn" data-act="go" data-tab="train">Choose a dungeon</button>'}
       </section>
 
       <section class="panel">
-        <div class="panel-title">Cloud Sync <small>${syncStatusText()}</small></div>
+        <h2 class="panel-title">Cloud sync <small>${syncStatusText()}</small></h2>
         ${SYNC.token ? `
           <p class="small muted" style="margin-top:0">Auto-syncs to your private GitHub Gist ~15 s after each change. Download everything (save, full coach report, profile) from the gist page → <i>Download ZIP</i>.</p>
           <div class="row wrap">
@@ -934,44 +1166,44 @@ ${p.notes}
           2) Tick <b>only</b> the <span class="mono">gist</span> scope, no expiry (or 1 year).<br>
           3) Paste it below. On a new phone, paste the same token + your Gist ID to restore.</p>
           <label class="f"><span>GitHub token (stays on this device only)</span><input type="password" autocomplete="off" data-sync="token" placeholder="ghp_…"></label>
-          <label class="f"><span>Gist ID (leave blank first time — it's created for you)</span><input data-sync="gistId" value="${esc(SYNC.gistId || '')}"></label>
+          <label class="f"><span>Gist ID (leave blank the first time and one is created for you)</span><input data-sync="gistId" value="${esc(SYNC.gistId || '')}"></label>
           <button class="btn primary" data-act="syncconnect">Connect</button>`}
       </section>
 
       <section class="panel">
-        <div class="panel-title">Save Data</div>
-        <p class="small muted" style="margin-top:0">${SYNC.token ? 'Stored on this device and synced to your gist.' : 'Stored only on this device — clearing browser data erases it. Turn on Cloud Sync or back up regularly.'}</p>
+        <h2 class="panel-title">Backups</h2>
+        <p class="small muted" style="margin-top:0">${SYNC.token ? 'Stored on this device and synced to your gist.' : 'Stored only on this device, so clearing browser data erases it. Turn on cloud sync or back up regularly.'}</p>
         <div class="row wrap">
-          <button class="btn" data-act="backup">Export backup .txt</button>
+          <button class="btn" data-act="backup">${SHARE_VERB} backup</button>
           <button class="btn" data-act="restore">Import backup</button>
         </div>
       </section>`;
   }
 
   const PROFILE_FIELDS = [
-    ['Personal Data', [['name', 'Name / player name'], ['age', 'Age'], ['height', 'Height (cm)'], ['weight', 'Weight (kg)'], ['bodyFat', 'Body fat % (estimate)']]],
+    ['Personal data', [['name', 'Name / player name'], ['age', 'Age'], ['height', 'Height (cm)'], ['weight', 'Weight (kg)'], ['bodyFat', 'Body fat % (estimate)']]],
     ['Goals', [['goal', 'Primary goal (fat loss / muscle gain / strength / performance)'], ['secondaryGoals', 'Secondary goals'], ['targetWeight', 'Target weight / composition'], ['timeline', 'Timeline expectations']]],
-    ['Training Background', [['experience', 'Experience level & years training'], ['activity', 'Current weekly activity'], ['steps', 'Average daily steps']]],
+    ['Training background', [['experience', 'Experience level & years training'], ['activity', 'Current weekly activity'], ['steps', 'Average daily steps']]],
     ['Preferences', [['likes', 'Training styles you enjoy'], ['dislikes', 'Training styles you dislike']]],
-    ['Schedule & Equipment', [['daysPerWeek', 'Days per week available'], ['sessionLength', 'Max session length'], ['equipment', 'Equipment access (full gym, DBs, home gym, bands…)']]],
-    ['Health & Safety', [['injuries', 'Injuries / joint issues / surgeries', 1], ['medical', 'Medical conditions / medications', 1], ['restrictions', 'Movement restrictions', 1]]],
+    ['Schedule and equipment', [['daysPerWeek', 'Days per week available'], ['sessionLength', 'Max session length'], ['equipment', 'Equipment access (full gym, DBs, home gym, bands…)']]],
+    ['Health and safety', [['injuries', 'Injuries / joint issues / surgeries', 1], ['medical', 'Medical conditions / medications', 1], ['restrictions', 'Movement restrictions', 1]]],
     ['Nutrition', [['diet', 'Diet preference'], ['foodLikes', 'Foods you like', 1], ['foodDislikes', 'Foods you dislike', 1], ['allergies', 'Allergies / intolerances'], ['eatingSchedule', 'Daily eating schedule'], ['cooking', 'Cooking ability'], ['budget', 'Budget']]],
-    ['Coach Notes', [['notes', 'Anything else the coach should know', 1]]],
+    ['Coach notes', [['notes', 'Anything else the coach should know', 1]]],
   ];
 
   function viewProfile() {
     const p = S.profile, T = S.targets;
     return `
       <section class="panel">
-        <div class="panel-title">Player Profile <button class="btn sm ghost" data-act="go" data-tab="status">‹ Back</button></div>
-        <p class="small muted" style="margin-top:0">Fill this in, then export <b>user_fitness_profile.txt</b> and add it to your Claude Project Knowledge. The coach builds your plan from it.</p>
-        <div class="row wrap"><button class="btn primary" data-act="profiletxt">Share profile .txt</button><button class="btn" data-act="copyprofile">Copy</button><button class="btn" data-act="pasteprofile">Paste / import profile</button></div>
+        <h2 class="panel-title">Profile <button class="btn sm ghost" data-act="go" data-tab="status">Back to status</button></h2>
+        <p class="small muted lead">Fill this in, then export <b>user_fitness_profile.txt</b> and add it to your Claude Project Knowledge. The coach builds your plan from it.</p>
+        <div class="row wrap"><button class="btn primary" data-act="profiletxt">${SHARE_VERB} profile</button><button class="btn" data-act="copyprofile">Copy profile</button><button class="btn" data-act="pasteprofile">Paste a profile</button></div>
       </section>
-      ${PROFILE_FIELDS.map(([title, fields]) => `<section class="panel"><div class="panel-title">${title}</div>
+      ${PROFILE_FIELDS.map(([title, fields]) => `<section class="panel"><h2 class="panel-title">${title}</h2>
         ${fields.map(([k, l, ta]) => `<label class="f"><span>${l}</span>${ta ? `<textarea data-prof="${k}">${esc(p[k])}</textarea>` : `<input data-prof="${k}" value="${esc(p[k])}">`}</label>`).join('')}
       </section>`).join('')}
       <section class="panel">
-        <div class="panel-title">System Settings</div>
+        <h2 class="panel-title">Settings</h2>
         <label class="f"><span>Program start date (Week 1 begins here)</span><input type="date" data-set="startDate" value="${esc(S.startDate)}"></label>
         <label class="f"><span>Training days (workout quest appears on these days)</span></label>
         <div class="chips" style="margin-bottom:12px">${WEEKDAYS.map((d, i) => `<button class="chip ${S.trainingDays.includes(i) ? 'on' : ''}" data-act="tday" data-d="${i}">${d}</button>`).join('')}</div>
@@ -980,8 +1212,8 @@ ${p.notes}
         </div>
         <p class="small muted">Set calorie/macro targets from your coach's nutrition plan.</p>
         <label class="f"><span>Wake-time ramp, week 1→6 (separate with /)</span><input data-setting="wakeRamp" value="${esc((S.wakeRamp || []).join(' / '))}"></label>
-        <label class="f"><span>Routine habits — one per line, optional stat at end: "Read 20 min | INT" ({wake} = this week's wake time)</span><textarea data-setting="habits" style="min-height:150px">${esc((S.habits || []).map(h => `${h.label} | ${h.stat}`).join('\n'))}</textarea></label>
-        <label class="f"><span>Daily routine timeline — "HH:MM what"</span><textarea data-setting="routine" style="min-height:240px">${esc(S.routine || '')}</textarea></label>
+        <label class="f"><span>Routine habits, one per line. Add a stat at the end if you like, e.g. "Read 20 min | INT". {wake} becomes this week's wake time.</span><textarea data-setting="habits" style="min-height:150px">${esc((S.habits || []).map(h => `${h.label} | ${h.stat}`).join('\n'))}</textarea></label>
+        <label class="f"><span>Daily schedule, one line each as "HH:MM what". Start a line with [run], [strength] or [rest] after the time to show it only on that kind of day; lines without a tag show every day.</span><textarea data-setting="routine" style="min-height:240px">${esc(S.routine || '')}</textarea></label>
         <button class="btn danger sm" data-act="wipe">Erase all data</button>
       </section>`;
   }
@@ -989,7 +1221,7 @@ ${p.notes}
   // ------------------------------------------------------------------ events
   $('#tabs').addEventListener('click', e => {
     const b = e.target.closest('button[data-tab]'); if (!b) return;
-    tab = b.dataset.tab; planEdit = false; render();
+    go(b.dataset.tab);
   });
 
   const view = $('#view');
@@ -1034,7 +1266,7 @@ ${p.notes}
 
   view.addEventListener('change', e => {
     const t = e.target;
-    if (t.type === 'checkbox' && t.dataset.day) { render(); checkProgressEvents(); }
+    if (t.type === 'checkbox' && t.dataset.day) { justDone = t.checked ? t.dataset.field : ''; render(); justDone = ''; checkProgressEvents(); }
     else if (t.dataset.draft === 'pain') render();
     else if (t.dataset.set === 'startDate' && t.value) { S.startDate = t.value; save(); }
     else if (t.dataset.day && t.dataset.field !== 'note') { render(); checkProgressEvents(); }
@@ -1045,34 +1277,43 @@ ${p.notes}
     // update the tick / subtitle without re-rendering (keeps keyboard focus)
     const row = input.closest('[data-qrow]'); if (!row) return;
     const q = questsFor(input.dataset.day).find(x => x.id === row.dataset.qrow); if (!q) return;
+    if (q.done && !row.classList.contains('done')) { row.classList.remove('pop'); void row.offsetWidth; row.classList.add('pop'); }
     row.classList.toggle('done', q.done);
     row.querySelector('.check').textContent = q.done ? '✓' : '';
-    row.querySelector('.q-sub').textContent = `${q.value || 0} / ${q.target} ${q.unit} · ${q.stat}`;
+    row.querySelector('.q-sub').textContent = `${q.value || 0} of ${q.target} ${q.unit}`;
   }
 
   view.addEventListener('click', async e => {
     const b = e.target.closest('[data-act]'); if (!b) return;
     const a = b.dataset.act;
     switch (a) {
-      case 'go': tab = b.dataset.tab; render(); break;
+      case 'go': go(b.dataset.tab); break;
       case 'qday': {
         const n = addDays(questDate, +b.dataset.delta);
-        if (n <= dkey()) { questDate = n; render(); }
+        if (n <= dkey()) { questDate = n; render(); window.scrollTo({ top: 0 }); }
         break;
       }
       case 'bump': {
         const d = day(b.dataset.day); const f = b.dataset.field;
-        d[f] = String(+(num(d[f]) + num(b.dataset.step)).toFixed(2)); save(); render(); checkProgressEvents();
+        const was = questsFor(b.dataset.day).find(q => q.id === f)?.done;
+        d[f] = String(+(num(d[f]) + num(b.dataset.step)).toFixed(2)); save();
+        justDone = was ? '' : f; render(); justDone = ''; checkProgressEvents();
         break;
       }
-      case 'start': newDraft(+b.dataset.day); render(); break;
+      case 'start': newDraft(+b.dataset.day); if (tab === 'train') { render(); window.scrollTo({ top: 0 }); } else go('train'); break;
       case 'discard':
-        if (await sys('<h3>ABANDON DUNGEON?</h3><p class="center">This in-progress workout will be lost.</p>', [{ label: 'Cancel', value: 0 }, { label: 'Abandon', danger: true, value: 1 }])) { S.draft = null; save(); render(); }
+        if (await sys('<h3>ABANDON DUNGEON?</h3><p class="center">This in-progress workout will be lost.</p>', [{ label: 'Cancel', value: 0 }, { label: 'Abandon', danger: true, value: 1 }])) { S.draft = null; stopRest(); save(); render(); window.scrollTo({ top: 0 }); }
         break;
       case 'addex':
         S.draft.exercises.push(b.dataset.type === 'cardio' ? { name: '', type: 'cardio', min: '', dist: '', note: '' } : { name: '', type: 'strength', sets: [{ w: '', r: '' }], note: '' });
         save(); render(); break;
-      case 'delex': S.draft.exercises.splice(+b.dataset.ex, 1); save(); render(); break;
+      case 'delex': {
+        const ex = S.draft.exercises[+b.dataset.ex];
+        const logged = ex.type === 'cardio' ? num(ex.min) > 0 : (ex.sets || []).some(s => String(s.r).trim() !== '');
+        if (logged && !(await sys(`<h3>REMOVE EXERCISE?</h3><p class="center">${esc(ex.name || 'This exercise')} has logged sets.</p>`, [{ label: 'Cancel', value: 0 }, { label: 'Remove', danger: true, value: 1 }]))) break;
+        S.draft.exercises.splice(+b.dataset.ex, 1); save(); render(); break;
+      }
+      case 'rest': startRest(+b.dataset.sec || 90); break;
       case 'addset': {
         const ex = S.draft.exercises[+b.dataset.ex];
         const last = ex.sets[ex.sets.length - 1] || { w: '', r: '' };
@@ -1089,7 +1330,7 @@ ${p.notes}
         if (S.draft && !(await sys('<h3>REPLACE DRAFT?</h3><p class="center">You have a workout in progress. Replace it with this log for editing?</p>', [{ label: 'Cancel', value: 0 }, { label: 'Replace', primary: true, value: 1 }]))) break;
         const w = S.workouts.find(x => x.id === b.dataset.id);
         S.draft = JSON.parse(JSON.stringify(w)); S.draft.editing = true;
-        save(); tab = 'train'; render(); break;
+        save(); go('train'); break;
       }
       case 'delw':
         if (await sys('<h3>DELETE LOG?</h3><p class="center">XP and records from this workout will be removed.</p>', [{ label: 'Cancel', value: 0 }, { label: 'Delete', danger: true, value: 1 }])) {
@@ -1107,11 +1348,11 @@ ${p.notes}
       }
       case 'wipe':
         if (await sys('<h3 class="red">ERASE ALL DATA?</h3><p class="center">This cannot be undone. Export a backup first.</p>', [{ label: 'Cancel', value: 0 }, { label: 'Erase', danger: true, value: 1 }])) {
-          localStorage.removeItem(STORE_KEY); S = blankState(); save(); tab = 'status'; render(); intro();
+          localStorage.removeItem(STORE_KEY); S = blankState(); save(); go('status'); intro();
         }
         break;
       case 'pweek': planWeek = +b.dataset.w; render(); break;
-      case 'planedit': planEdit = !planEdit; render(); break;
+      case 'planedit': planEdit = !planEdit; render(); window.scrollTo({ top: 0 }); break;
       case 'addpe': S.program.days[+b.dataset.d].exercises.push(ex('', 3, '10', '90 s', '')); save(); render(); break;
       case 'delpe': S.program.days[+b.dataset.d].exercises.splice(+b.dataset.e, 1); save(); render(); break;
       case 'addday': S.program.days.push({ name: `Day ${S.program.days.length + 1} – New Session`, exercises: [] }); save(); render(); break;
@@ -1139,22 +1380,22 @@ ${p.notes}
     // drop empty rows
     w.exercises = w.exercises.filter(e => e.name.trim()).map(e => e.type === 'cardio' ? e : { ...e, sets: e.sets.filter(s => String(s.r).trim() !== '') });
     const hasWork = w.exercises.some(e => (e.type === 'cardio' ? num(e.min) > 0 : e.sets.length));
-    if (!hasWork) { toast('Log at least one set or cardio block first'); render(); return; }
+    if (!hasWork) { toast('Log at least one set or some cardio minutes to clear the dungeon.'); render(); return; }
     const editing = w.editing; delete w.editing;
     if (editing) S.workouts = S.workouts.map(x => (x.id === w.id ? w : x)); else S.workouts.push(w);
     S.draft = null; save();
     const after = derive();
     const info = after.wxp[w.id];
-    let html = `<h3>${editing ? 'LOG UPDATED' : 'DUNGEON CLEARED'}</h3><div class="big">+${info.xp} XP</div><p class="center muted">${info.sets} sets${info.minutes ? ' · ' + info.minutes + ' min cardio' : ''}</p>`;
-    if (info.prs.length) html += `<p class="center gold mono">◆ NEW RECORD ◆<br>${info.prs.map(esc).join('<br>')}</p>`;
+    let html = `<div class="rank-badge sm r-${after.rank.r} pulse" aria-hidden="true"><span>${after.rank.r}</span></div><h3>${editing ? 'LOG UPDATED' : 'DUNGEON CLEARED'}</h3><div class="big" data-count="${info.xp}" data-suffix=" XP">+${info.xp} XP</div><p class="center muted">${info.sets} sets${info.minutes ? `, ${info.minutes} min cardio` : ''}</p>`;
+    if (info.prs.length) html += `<div class="center record"><div class="sys-line">New record</div>${info.prs.map(esc).join('<br>')}</div>`;
     if (w.pain) {
       html += `<div class="panel" style="border-color:var(--red)"><b class="red">⚠ PAIN REPORTED</b><p class="small">${esc(w.painNote || '')}</p>
         <p class="small">Pause any movement that caused <b>sharp pain, joint instability or unusual symptoms</b> until your coach reviews it. Share this log with Claude for alternatives. If it persists or is severe, see a physio or doctor.</p></div>`;
     }
-    if (!w.energy && !w.difficulty) html += `<p class="small muted center">Tip: fill in the debrief (energy, difficulty) for +10 XP and better coaching.</p>`;
-    tab = 'records';
-    render();
-    const choice = await sys(html, [{ label: 'Share log .txt', value: 'share' }, { label: 'Done', primary: true, value: 'done' }]);
+    if (!w.energy && !w.difficulty) html += `<p class="small muted center">Fill in the debrief next time for 10 more XP and better coaching.</p>`;
+    stopRest();
+    go('records');
+    const choice = await sys(html, [{ label: `${SHARE_VERB} log`, value: 'share' }, { label: 'Done', primary: true, value: 'done' }], { cls: editing ? '' : 'clear' });
     if (choice === 'share') await shareOrDownload(`workout_${w.date}.txt`, workoutTxt(w));
     checkProgressEvents();
   }
@@ -1172,7 +1413,7 @@ Bike Intervals | 1 | 10x30s | — | hard | warm up first | cardio`;
       if (!ok) return;
       const txt = (document.getElementById('progText') || {}).value || lastProgText;
       const prog = parseProgram(txt);
-      if (!prog.days.length) { toast('No days found — start each day with "# Day name"'); return; }
+      if (!prog.days.length) { toast('No days found. Start each day with a line like "# Mon – Easy run".'); return; }
       S.program = { ...S.program, days: prog.days }; save(); render(); toast(`Imported ${prog.days.length} days`);
     });
     // keep text in case modal re-renders
@@ -1305,7 +1546,7 @@ Bike Intervals | 1 | 10x30s | — | hard | warm up first | cardio`;
 
   async function syncPush(manual) {
     if (!SYNC.token || syncBusy) return false;
-    if (!navigator.onLine) { syncErr = 'offline — will retry'; if (manual) toast('Offline — will sync when back online'); return false; }
+    if (!navigator.onLine) { syncErr = 'offline, will retry'; if (manual) toast("You're offline. AWAKEN will sync when you're back online."); return false; }
     syncBusy = true;
     try {
       const body = JSON.stringify({ description: 'AWAKEN fitness save (auto-synced)', files: gistFiles() });
@@ -1368,7 +1609,7 @@ Bike Intervals | 1 | 10x30s | — | hard | warm up first | cardio`;
         throw new Error(syncErr); // creating the gist validates token + gist scope
       }
       saveSyncCfg(); render();
-      if (SYNC.gistId) sys(`<h3>CLOUD SYNC ACTIVE</h3><p class="center">Gist ID:<br><b class="mono gold">${esc(SYNC.gistId)}</b></p><p class="small muted">Save this ID with your token in a password manager — you need both to restore on a new device.</p>`);
+      if (SYNC.gistId) sys(`<h3>CLOUD SYNC ACTIVE</h3><p class="center">Gist ID:<br><b class="mono gold">${esc(SYNC.gistId)}</b></p><p class="small muted">Save this ID with your token in a password manager. You need both to restore on a new device.</p>`);
     } catch (e) {
       SYNC = {}; saveSyncCfg(); render();
       sys(`<h3 class="red">CONNECT FAILED</h3><p class="center">${esc(e.message)}</p><p class="small muted">Check the token is a <b>classic</b> token with the <b>gist</b> scope.</p>`);
@@ -1388,16 +1629,77 @@ Bike Intervals | 1 | 10x30s | — | hard | warm up first | cardio`;
       <p>Clear <b>Daily Quests</b> (steps, protein, fibre, water, sleep, training) and <b>Dungeons</b> (workouts) to earn XP, raise your stats and climb from <b>E-Rank</b> to <b>S-Rank</b> over your 6-week program.</p>
       <p class="small muted">Step 1: complete your profile and send it to your coach. All data stays on this device.</p>`,
       [{ label: 'Accept', primary: true, value: 1 }]).then(() => {
-      S.onboarded = true; S.seenPenalty = dkey(); save(); tab = 'profile'; render();
+      S.onboarded = true; S.seenPenalty = dkey(); save(); go('profile');
     });
+  }
+
+  /** One-time System message after the built-in plan was upgraded, with a one-tap way back. */
+  async function planNotice() {
+    if (S.planNotice !== 'v3' && S.planNotice !== 'v4') return;
+    const fromV3 = S.programPrev && S.programPrev.id === 'hybrid-bw-v3';
+    const pick = await sys(`<h3>PLAN UPGRADED</h3>
+      ${fromV3 ? '' : `<p>Block 1 now follows the hybrid-training research:</p>
+      <p class="small">Legs train <b>twice a week</b> with jumps (Tue squat day, Sat hinge day), because strength plus plyometrics on 2+ days a week is what makes running cheaper. Thursday is upper-body only so your legs are fresh for Friday's long run. Wednesday stays the one hard session.</p>`}
+      <p class="small">Strength days now use <b>the park</b>: pull-ups, chin-ups, bar dips, low-bar rows, monkey bars and bench work, plus <b>Nordic curls</b> on Saturday, which halve hamstring injuries in prevention programmes. Every exercise keeps a home fallback in its notes.</p>
+      ${fromV3 ? '' : S.routine === DEFAULT_ROUTINE ? '<p class="small">Strength days move to <b>late afternoon</b> in your schedule; runs stay in the morning.</p>' : '<p class="small">You\'ve customised your daily schedule, so it wasn\'t changed. The research suggests lifting in the late afternoon and running in the morning; see Settings to tag lines by day type.</p>'}
+      <p class="small muted">Your logs, records and XP are untouched. If you'd edited the old plan, you can bring it back.</p>`,
+      [{ label: 'Restore old plan', value: 'old' }, { label: 'Use new plan', primary: true, value: 'new' }]);
+    if (pick === 'old' && S.programPrev) { S.program = { ...S.programPrev, keep: true }; toast('Old plan restored'); }
+    delete S.planNotice; delete S.programPrev; save(); render();
   }
 
   // Midnight rollover: refresh quests if the app stays open past midnight.
   let lastDay = dkey();
   setInterval(() => { if (dkey() !== lastDay) { lastDay = dkey(); questDate = lastDay; render(); checkProgressEvents(); } }, 60000);
 
+  // ------------------------------------------------------------------ updates
+  // Must equal VERSION in sw.js (the smoke test checks). A waiting service worker with a different
+  // version means this page is running old code, so offer a reload. Same version means the page
+  // already loaded the new files (network-first), so the new worker just takes over quietly.
+  const APP_VERSION = 'awaken-v9';
+  let reloadOnTakeover = false;
+  function workerVersion(w) {
+    return new Promise(resolve => {
+      const ch = new MessageChannel();
+      const t = setTimeout(() => resolve(null), 2000);
+      ch.port1.onmessage = e => { clearTimeout(t); resolve(e.data); };
+      try { w.postMessage({ type: 'version' }, [ch.port2]); } catch { clearTimeout(t); resolve(null); }
+    });
+  }
+  async function onWaiting(w) {
+    const v = await workerVersion(w);
+    if (v && v === APP_VERSION) { w.postMessage({ type: 'skip' }); return; }
+    showUpdateBar(w);
+  }
+  function showUpdateBar(w) {
+    if (document.getElementById('updateBar')) return;
+    const el = document.createElement('div');
+    el.id = 'updateBar'; el.className = 'update-bar'; el.setAttribute('role', 'status');
+    el.innerHTML = `<span><b>Update ready.</b> ${S.draft ? 'Your workout in progress is saved.' : 'Reload to get the latest version.'}</span>
+      <button class="btn sm primary" data-u="reload">Reload</button><button class="btn sm ghost" data-u="later" aria-label="Not now">Later</button>`;
+    el.addEventListener('click', e => {
+      const b = e.target.closest('[data-u]'); if (!b) return;
+      if (b.dataset.u === 'later') { el.remove(); return; }
+      save(false);
+      reloadOnTakeover = true;
+      w.postMessage({ type: 'skip' });
+      setTimeout(() => location.reload(), 3000); // fallback if the takeover event never arrives
+    });
+    document.querySelector('.topbar').after(el);
+  }
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
+    navigator.serviceWorker.addEventListener('controllerchange', () => { if (reloadOnTakeover) { reloadOnTakeover = false; location.reload(); } });
+    navigator.serviceWorker.register('sw.js').then(reg => {
+      if (reg.waiting && navigator.serviceWorker.controller) onWaiting(reg.waiting);
+      reg.addEventListener('updatefound', () => {
+        const w = reg.installing; if (!w) return;
+        w.addEventListener('statechange', () => { if (w.state === 'installed' && navigator.serviceWorker.controller) onWaiting(w); });
+      });
+      // iOS resumes home-screen apps from memory, so check for a new version whenever the app comes back.
+      const check = () => reg.update().catch(() => {});
+      document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') check(); });
+      setInterval(check, 30 * 60000);
+    }).catch(() => {});
   }
 
   render();
@@ -1405,7 +1707,7 @@ Bike Intervals | 1 | 10x30s | — | hard | warm up first | cardio`;
   (async () => {
     // Pull newer data from another device before awarding level-ups etc.
     if (SYNC.token && SYNC.gistId && navigator.onLine) await syncPull(false);
-    if (S.onboarded) checkProgressEvents();
+    if (S.onboarded) { planNotice(); checkProgressEvents(); }
     if (SYNC.token && (S.updatedAt || 0) > (SYNC.lastSync || 0)) scheduleSync();
   })();
 })();
