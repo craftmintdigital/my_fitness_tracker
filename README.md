@@ -24,18 +24,21 @@ Runs on Mon / Wed / Fri, strength on Tue / Thu / Sat, recovery on Sunday.
 | Day | When | Mission |
 |---|---|---|
 | Mon | Morning | **Easy run** (25 → 35 min) + strides from week 3, then calves, tibialis, dead bugs |
-| Tue | Late afternoon | **Strength A: squat + push**. Pogo hops, Bulgarian split squats, push-ups, step-ups, pike push-ups, hollow hold |
+| Tue | Late afternoon, park | **Strength A: squat + push**. Pogo hops, Bulgarian split squats (bench), bar dips, step-ups, decline push-ups, hanging knee raises |
 | Wed | Morning | **Hybrid Mission**: 400 m run + station rounds, logged for time (4 → 8 rounds). The week's only hard session |
-| Thu | Late afternoon | **Strength B: pull + push, upper only**. Table rows, close-grip push-ups, backpack rows, dips, curls, Y-T-W, side plank |
+| Thu | Late afternoon, park | **Strength B: pull + push, upper only**. Pull-ups, push-ups, low-bar rows, pike push-ups, monkey bars, Y-T-W, side plank |
 | Fri | Morning | **Long easy run** (35 → 50 min, week 6 = 5K time trial) |
-| Sat | Late afternoon | **Strength C: hinge + pull + jumps**. Squat jumps, single-leg RDLs, sliding leg curls, reverse lunges, glute bridges, door rows |
+| Sat | Late afternoon, park | **Strength C: hinge + pull + jumps**. Squat jumps, single-leg RDLs, Nordic curls, reverse lunges, single-leg hip thrusts, chin-ups |
 | Sun | Morning | Active recovery: long walk + mobility, weekly review, send the coach report |
+
+Strength days use the park's pull-up bar, parallel bars, waist-high bar, monkey bars and benches. Every exercise has a **home fallback** in its notes for rainy or busy days. Pull-ups, chin-ups and dips start with negatives (jump up, lower slowly) if you can't do full reps yet; log negatives as reps. Your old "Inverted Table Row" history counts towards the new "Inverted Row".
 
 When you open the app on the built-in plan from before, the System tells you about the upgrade once and offers **Restore old plan** in case you'd edited it. Your logs, records and XP are never touched, and a plan imported from your coach is never replaced.
 
 ### Why the plan looks like this
 - **Legs train twice a week, with jumps.** In the research on runners, plyometrics alone barely changed running economy. Plyometrics combined with strength work had a large effect, and more than 2 sessions a week did better ([Kinesiology, 2023](https://hrcak.srce.hr/en/309864)). The old plan trained legs once.
 - **Weekly sets matter more than the split.** Volume-matched studies find similar growth whether a muscle is trained once or several times a week, and training it about twice a week is an easy way to get to ~10+ hard sets (Schoenfeld et al. 2019 meta-analysis; see also this [review of the evidence](https://ro.ecu.edu.au/ecuworkspost2013/5665)). Each muscle group now gets two sessions.
+- **Nordic curls protect your hamstrings.** Prevention programmes that include them cut hamstring injuries by about half (risk ratio 0.49 across 15 studies and 8,459 athletes, mostly in soccer) ([van Dyk et al. 2019, BJSM](https://bjsm.bmj.com/content/53/21/1362); [Sports Medicine 2017](https://link.springer.com/10.1007/s40279-016-0638-2)). They replace sliding leg curls on Saturday.
 - **Bodyweight is enough if you push close to failure.** Light and heavy loads build the same muscle when sets go near failure; heavy loads mainly add maximal strength ([Schoenfeld et al. 2017](https://pubmed.ncbi.nlm.nih.gov/28834797/)). That's why the last set of each exercise goes to 1 rep short.
 - **Running gets in the way of lifting more than cycling does**, especially when there's a lot of it (Wilson et al. 2012 meta-analysis, *J Strength Cond Res*). So runs and leg sessions are on different days, and Thursday has no leg work before Friday's long run.
 - **Mostly easy, one hard day.** For recreational athletes, polarized (80/20) and pyramidal intensity mixes work about equally well, and both beat lots of threshold work (2024 *Sports Medicine* network meta-analysis; [2018 systematic review](https://pubmed.ncbi.nlm.nih.gov/29182410/)). Mon and Fri stay conversational; Wednesday is the only session meant to hurt.

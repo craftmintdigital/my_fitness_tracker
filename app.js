@@ -36,10 +36,12 @@
   //  - Legs twice a week (Tue squat pattern, Sat hinge pattern) with plyometrics, because strength + jumps
   //    on 2+ days a week is what improves running economy. Thu is upper-only so legs are fresh for Fri's long run.
   //  - Mostly easy running; one race-style session (Wed) a week; weekly run time grows < 30 %.
+  // v4: strength days moved to the park (pull-up bar, dips, low bar, monkey bars, benches), plus Nordic curls,
+  //  which halve hamstring injuries in prevention programmes. Each exercise keeps a home fallback in its notes.
   const OLD_STARTER_NOTE = 'Starter template.';
   const DEFAULT_PROGRAM = {
-    id: 'hybrid-bw-v3',
-    note: 'Hybrid Athlete Block 1 (bodyweight, no gym). Strength sets end 1–3 reps short of failure (RIR 1–3); on the last set of each exercise go to 1 rep short. Bodyweight and backpack sets build muscle as well as heavy weights when taken that close to failure. When you beat the top of a rep range on every set, move to the next variation or add backpack load (books, water bottles). Easy runs are conversational, RPE 3–4/10: if you can\'t speak in sentences, slow down or walk. Wednesday is the only hard session. Sunday is active recovery (walk + mobility).',
+    id: 'hybrid-bw-v4',
+    note: 'Hybrid Athlete Block 1 (bodyweight, no gym). Strength sets end 1–3 reps short of failure (RIR 1–3); on the last set of each exercise go to 1 rep short. Bodyweight and backpack sets build muscle as well as heavy weights when taken that close to failure. Strength days use the park (pull-up bar, parallel bars, low bar, monkey bars, benches); every exercise has a home fallback in its notes for rainy or busy days. When you beat the top of a rep range on every set, move to the next variation or add backpack load (books, water bottles). Easy runs are conversational, RPE 3–4/10: if you can\'t speak in sentences, slow down or walk. Wednesday is the only hard session. Sunday is active recovery (walk + mobility).',
     steps: [7000, 7000, 8500, 8500, 10000, 10000],
     days: [
       { dow: 1, name: 'Mon – Easy Run + Strides', exercises: [
@@ -48,39 +50,39 @@
         ex('Tibialis Raise', 2, '20', '45 s', 'Bodyweight', 'Back against a wall, heels ~30 cm out, lift your toes.'),
         ex('Dead Bug', 3, '8', '45 s', 'Each side', 'Slow. Exhale fully, low back stays down.'),
       ]},
-      { dow: 2, name: 'Tue – Strength A: Squat + Push', exercises: [
-        ex('Pogo Hops', 3, '20', '60 s', 'Bodyweight', 'First, while fresh. Small, quick, stiff ankles: tendon prep for running. Skip if shins are sore.'),
-        ex('Bulgarian Split Squat', 4, '8–12', '90 s', 'RIR 2 (backpack when >15 reps)', 'Rear foot on a bed or chair. Reps are per leg. Leave 2 in the tank: the mission is tomorrow.'),
-        ex('Push-up', 4, '8–15', '90 s', 'RIR 1–2', 'Ladder: incline → standard → feet-elevated → deficit (hands on books) → archer.'),
-        ex('Step-up', 3, '10', '60 s', 'Backpack', 'Per leg. Knee-height chair or stair, drive through the front heel, no push-off from the back leg.'),
-        ex('Pike Push-up', 3, '6–12', '90 s', 'RIR 2', 'Hips high, head to a spot in front of your hands. Harder: feet on a chair.'),
-        ex('Hollow Body Hold', 3, '20s', '45 s', 'Bodyweight', 'Low back glued to the floor. Bend your knees if it lifts.'),
+      { dow: 2, name: 'Tue – Strength A: Squat + Push (park)', exercises: [
+        ex('Pogo Hops', 3, '20', '60 s', 'Bodyweight', 'First, while fresh, on grass or rubber. Small, quick, stiff ankles: tendon prep for running. Skip if shins are sore.'),
+        ex('Bulgarian Split Squat', 4, '8–12', '90 s', 'RIR 2 (backpack when >15 reps)', 'Rear foot on a park bench. Reps are per leg. Leave 2 in the tank: the mission is tomorrow. Home: rear foot on a bed or chair.'),
+        ex('Parallel Bar Dip', 4, '5–10', '2 min', 'RIR 1–2', 'Shoulders down, slight forward lean, lower until upper arms are level with the bars. Can\'t do 5 yet? Jump to the top and lower in 3–5 s. Stop if the front of your shoulder hurts. Home: chair dip.'),
+        ex('Step-up', 3, '10', '60 s', 'Backpack', 'Per leg, onto a bench. Drive through the front heel, no push-off from the back leg. Home: knee-height chair or stair.'),
+        ex('Decline Push-up', 3, '8–15', '75 s', 'RIR 1–2', 'Feet on a bench, hands on the ground. Harder: hands on the parallel bars for a deeper range. Home: feet on a chair.'),
+        ex('Hanging Knee Raise', 3, '8–12', '60 s', 'Bodyweight', 'Hang from the pull-up bar, no swinging; curl your pelvis up, lower slowly. Harder: straight legs. Home: hollow body hold 3 × 20 s.'),
       ]},
       { dow: 3, name: 'Wed – HYBRID MISSION (race sim)', exercises: [
         run('Mission Circuit', ['4 rounds', '5 rounds', '6 rounds', '4 rounds (easy)', '7 rounds', '8 rounds — FOR TIME'], 'Steady, RPE 6–7 (Wk6 race effort)',
           'Each round = 400 m run (~2–3 min) + next station in order: 1) 10 burpee broad jumps 2) 20 walking lunges (backpack) 3) 30 m bear crawl 4) 15 push-ups 5) 15 backpack squat-to-press 6) 20 mountain climbers/side 7) 60 s backpack carry 8) 20 sit-ups. Log TOTAL minutes and beat it next week. This is the week\'s only hard session: keep it controlled until week 6.'),
         ex('Plank', 2, '45s', '45 s', 'Bodyweight', 'Cool-down core. Then a 5 min walk.'),
       ]},
-      { dow: 4, name: 'Thu – Strength B: Pull + Push (upper only)', exercises: [
-        ex('Inverted Table Row', 4, '8–12', '90 s', 'RIR 1', 'Lie under a sturdy table, grip the edge, body straight. Ladder: knees bent → legs straight → feet on a chair → backpack on chest.'),
-        ex('Close-grip Push-up', 4, '8–15', '90 s', 'RIR 1–2', 'Hands under shoulders, elbows brush your ribs: triceps focus.'),
-        ex('Backpack Bent-over Row', 3, '10–15', '75 s', 'Loaded backpack', 'Hinge to ~45°, pull the bag to your belly button.'),
-        ex('Chair Dip', 3, '8–15', '90 s', 'RIR 2', 'Two sturdy chairs or a bed edge. Stop if the front of your shoulder hurts.'),
-        ex('Backpack Curl', 3, '12–15', '60 s', 'Loaded backpack', 'Hold by the top handle or straps, lower slowly.'),
-        ex('Prone Y-T-W Raise', 2, '10', '45 s', 'Bodyweight', 'Each letter. Thumbs up, squeeze your upper back. Posture and shoulder health.'),
+      { dow: 4, name: 'Thu – Strength B: Pull + Push (park, upper only)', exercises: [
+        ex('Pull-up', 4, '3–8', '2 min', 'RIR 1', 'Ladder: 30 s dead hang → scapular pull-ups → negatives (jump up, lower in 5 s) → full reps → backpack once 10 is easy. Log negatives as reps. Home: towel door row 4 × 12–15.'),
+        ex('Push-up', 4, '8–15', '90 s', 'RIR 1–2', 'Ladder: standard → feet on the bench → deficit with hands on the parallel bars → archer.'),
+        ex('Inverted Row', 4, '8–12', '90 s', 'RIR 1–2', 'Under the waist-high bar, body straight, pull your chest to the bar. Ladder: knees bent → legs straight → feet on the bench → backpack. Home: under a sturdy table.'),
+        ex('Pike Push-up', 3, '6–12', '90 s', 'RIR 2', 'Feet on the bench, hips high, head to a spot in front of your hands. Home: feet on a chair, or on the floor.'),
+        ex('Monkey Bar Traverse', 3, '1–2 lengths', '90 s', 'Bodyweight', 'Grip and shoulder strength. Log lengths as reps. Skip a rung to make it harder. Home: dead hang 3 × 30 s from a door frame bar, or skip.'),
+        ex('Prone Y-T-W Raise', 2, '10', '45 s', 'Bodyweight', 'Lie face down along the bench. Each letter: thumbs up, squeeze your upper back. Posture and shoulder health. Home: face down on the floor.'),
         ex('Side Plank', 3, '30s', '30 s', 'Each side', 'Hips high, straight line. No leg work today: long run tomorrow.'),
       ]},
       { dow: 5, name: 'Fri – Long Run (Endurance Raid)', exercises: [
         run('Long Easy Run', ['35 min run/walk', '40 min run/walk', '45 min easy', '35 min easy', '50 min easy', '5K TIME TRIAL + 15 min easy'], 'RPE 3–4 (Wk6 trial: hard but even)', 'Slow enough to talk. Water + a pinch of salt + lemon after. Walk breaks are allowed, not failure.'),
         ex('Single-leg Calf Raise', 2, '15–20', '45 s', 'Bodyweight', 'Post-run.'),
       ]},
-      { dow: 6, name: 'Sat – Strength C: Hinge + Pull + Jumps', exercises: [
-        ex('Squat Jump', 3, '6', '75 s', 'Bodyweight', 'First, while fresh. Jump as high as you can, land softly, reset fully between reps. Power, not cardio.'),
+      { dow: 6, name: 'Sat – Strength C: Hinge + Pull + Jumps (park)', exercises: [
+        ex('Squat Jump', 3, '6', '75 s', 'Bodyweight', 'First, while fresh, on grass or rubber. Jump as high as you can, land softly, reset fully between reps. Power, not cardio.'),
         ex('Single-leg RDL', 4, '10–12', '75 s', 'Backpack in opposite hand', 'Per leg. Hips square, soft knee, feel the hamstring.'),
-        ex('Sliding Leg Curl', 3, '8–12', '75 s', 'RIR 1–2', 'Socks on tiles or a towel. Bridge up, slide heels out and back. Harder: single leg.'),
-        ex('Reverse Lunge', 3, '10', '75 s', 'Backpack', 'Per leg. Step back, back knee to just above the floor, push through the front heel.'),
-        ex('Single-leg Glute Bridge', 3, '12', '45 s', 'Each side', '2 s squeeze at the top.'),
-        ex('Towel Door Row', 3, '12–15', '60 s', 'RIR 1–2', 'Towel round a door handle (door closed, you on the hinge side). Squeeze your shoulder blades. Today can be your hardest leg day: Sunday is recovery.'),
+        ex('Nordic Curl Negative', 3, '3–5', '2 min', 'Slow as possible', 'Kneel on something soft, heels hooked under the low bar or a bench. Lower your body forward as slowly as you can, catch yourself with your hands, push back up. Week 1: 2 easy sets only, the soreness is real. Home: sliding leg curl 3 × 8–12.'),
+        ex('Reverse Lunge', 3, '10', '75 s', 'Backpack', 'Per leg. Step back, back knee to just above the ground, push through the front heel.'),
+        ex('Single-leg Hip Thrust', 3, '12', '60 s', 'Each side', 'Upper back on the bench, one foot planted, drive your hips up, 2 s squeeze at the top. Home: single-leg glute bridge on the floor.'),
+        ex('Chin-up', 3, '3–8', '2 min', 'RIR 1', 'Palms facing you. Same ladder as pull-ups: negatives first if needed. Home: backpack curl 3 × 12–15 + towel door row 3 × 12–15. Today can be your hardest day: Sunday is recovery.'),
       ]},
     ],
   };
@@ -225,6 +227,7 @@
     }
     migrateScheduleV2(out.program);
     migratePlanV3(out);
+    migratePlanV4(out);
     if (out.routine === ROUTINE_V1) out.routine = DEFAULT_ROUTINE;
     return out;
   }
@@ -255,7 +258,18 @@
     if (!prog.days.every(d => V2.some(n => String(d.name).startsWith(n)))) return;
     out.programPrev = prog;
     out.program = JSON.parse(JSON.stringify(DEFAULT_PROGRAM));
-    out.planNotice = 'v3';
+    out.planNotice = 'v4';
+  }
+  /** v3 (home strength) → v4 (park strength + Nordic curls), same rules as above. If this load already came
+   *  from v2 the older plan stays in programPrev, so "Restore old plan" goes back to what the player had. */
+  function migratePlanV4(out) {
+    const prog = out.program;
+    if (!prog || prog.id !== 'hybrid-bw-v3' || prog.keep || !Array.isArray(prog.days) || !prog.days.length) return;
+    const V3 = ['Mon – Easy Run', 'Tue – Strength A', 'Wed – HYBRID MISSION', 'Thu – Strength B', 'Fri – Long Run', 'Sat – Strength C'];
+    if (!prog.days.every(d => V3.some(n => String(d.name).startsWith(n)))) return;
+    if (!out.programPrev) out.programPrev = prog;
+    out.program = JSON.parse(JSON.stringify(DEFAULT_PROGRAM));
+    out.planNotice = 'v4';
   }
   /** touch=false for bookkeeping writes (seen level etc.) that shouldn't count as new data for sync. */
   function save(touch = true) {
@@ -384,7 +398,7 @@
       let x = 30; const prs = [];
       let sets = 0, minutes = 0;
       (w.exercises || []).forEach(e => {
-        const key = e.name.trim().toLowerCase();
+        const key = exKey(e.name);
         if (!key) return;
         if (e.type === 'cardio') { minutes += num(e.min); return; }
         // Loaded sets score by estimated 1RM; bodyweight sets score by max reps (tracked separately).
@@ -456,11 +470,14 @@
     return (+m[1] + inc) + (m[2] ? '–' + (+m[2] + inc) : '') + m[3];
   }
 
+  // Renamed exercises keep their history: old name → current name (lower case).
+  const EX_ALIASES = { 'inverted table row': 'inverted row' };
+  const exKey = name => { const k = String(name || '').trim().toLowerCase(); return EX_ALIASES[k] || k; };
   function lastPerformance(name, beforeDate = '9999') {
-    const key = name.trim().toLowerCase();
+    const key = exKey(name);
     const ws = S.workouts.filter(w => w.date <= beforeDate).sort((a, b) => (b.date + b.id).localeCompare(a.date + a.id));
     for (const w of ws) {
-      const e = (w.exercises || []).find(x => x.name.trim().toLowerCase() === key);
+      const e = (w.exercises || []).find(x => exKey(x.name) === key);
       if (e) return { date: w.date, e };
     }
     return null;
@@ -812,7 +829,12 @@ ${p.notes}
     const lead = exs.find(e => e.type === 'cardio');
     const detail = lead ? `${lead.name}: ${lead.reps}` : `${exs.length} exercises, starting with ${exs[0] ? exs[0].name : 'your first lift'}`;
     const kind = workoutsOn(k).length ? 'done' : S.draft ? 'draft' : 'train';
-    return { kind, title: todayMission(k) || pd.name, detail, idx };
+    // Keep the headline short: "Strength B: Pull + Push (park, upper only)" → title + "Park, upper only." in the detail.
+    const full = todayMission(k) || pd.name;
+    const paren = full.match(/^(.*?)\s*\(([^)]+)\)\s*$/);
+    const title = paren ? paren[1] : full;
+    const tag = paren ? paren[2].charAt(0).toUpperCase() + paren[2].slice(1) + '. ' : '';
+    return { kind, title, detail: tag + detail, idx };
   }
 
   function viewStatus(D) {
@@ -1613,11 +1635,13 @@ Bike Intervals | 1 | 10x30s | — | hard | warm up first | cardio`;
 
   /** One-time System message after the built-in plan was upgraded, with a one-tap way back. */
   async function planNotice() {
-    if (S.planNotice !== 'v3') return;
+    if (S.planNotice !== 'v3' && S.planNotice !== 'v4') return;
+    const fromV3 = S.programPrev && S.programPrev.id === 'hybrid-bw-v3';
     const pick = await sys(`<h3>PLAN UPGRADED</h3>
-      <p>Block 1 now follows the hybrid-training research:</p>
-      <p class="small">Legs train <b>twice a week</b> with jumps (Tue squat day, Sat hinge day), because strength plus plyometrics on 2+ days a week is what makes running cheaper. Thursday is upper-body only so your legs are fresh for Friday's long run. Wednesday stays the one hard session.</p>
-      ${S.routine === DEFAULT_ROUTINE ? '<p class="small">Strength days move to <b>late afternoon</b> in your schedule; runs stay in the morning.</p>' : '<p class="small">You\'ve customised your daily schedule, so it wasn\'t changed. The research suggests lifting in the late afternoon and running in the morning; see Settings to tag lines by day type.</p>'}
+      ${fromV3 ? '' : `<p>Block 1 now follows the hybrid-training research:</p>
+      <p class="small">Legs train <b>twice a week</b> with jumps (Tue squat day, Sat hinge day), because strength plus plyometrics on 2+ days a week is what makes running cheaper. Thursday is upper-body only so your legs are fresh for Friday's long run. Wednesday stays the one hard session.</p>`}
+      <p class="small">Strength days now use <b>the park</b>: pull-ups, chin-ups, bar dips, low-bar rows, monkey bars and bench work, plus <b>Nordic curls</b> on Saturday, which halve hamstring injuries in prevention programmes. Every exercise keeps a home fallback in its notes.</p>
+      ${fromV3 ? '' : S.routine === DEFAULT_ROUTINE ? '<p class="small">Strength days move to <b>late afternoon</b> in your schedule; runs stay in the morning.</p>' : '<p class="small">You\'ve customised your daily schedule, so it wasn\'t changed. The research suggests lifting in the late afternoon and running in the morning; see Settings to tag lines by day type.</p>'}
       <p class="small muted">Your logs, records and XP are untouched. If you'd edited the old plan, you can bring it back.</p>`,
       [{ label: 'Restore old plan', value: 'old' }, { label: 'Use new plan', primary: true, value: 'new' }]);
     if (pick === 'old' && S.programPrev) { S.program = { ...S.programPrev, keep: true }; toast('Old plan restored'); }
@@ -1632,7 +1656,7 @@ Bike Intervals | 1 | 10x30s | — | hard | warm up first | cardio`;
   // Must equal VERSION in sw.js (the smoke test checks). A waiting service worker with a different
   // version means this page is running old code, so offer a reload. Same version means the page
   // already loaded the new files (network-first), so the new worker just takes over quietly.
-  const APP_VERSION = 'awaken-v8';
+  const APP_VERSION = 'awaken-v9';
   let reloadOnTakeover = false;
   function workerVersion(w) {
     return new Promise(resolve => {

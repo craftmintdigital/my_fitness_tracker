@@ -2,7 +2,7 @@
 // Bump VERSION when files change, and set APP_VERSION in app.js to the same value
 // (the smoke test fails if they differ). The page compares the two to decide whether
 // to show "Update ready".
-const VERSION = 'awaken-v8';
+const VERSION = 'awaken-v9';
 const FILES = ['./', './index.html', './styles.css', './app.js', './manifest.webmanifest', './icon.svg',
   './fonts/oxanium-var.woff2', './fonts/atkinson-400.woff2', './fonts/atkinson-700.woff2', './fonts/atkinson-400-italic.woff2'];
 
