@@ -7,7 +7,7 @@ A fitness tracker for your 6-week training and nutrition block that works like a
 | System | What it does |
 |---|---|
 | **Daily Quests** | Steps, protein, fibre, water, sleep, plus a workout on training days (or 10 min of mobility on rest days). +10 XP each, +50 XP bonus for clearing them all. |
-| **Dungeons** | Workouts. Start one from your plan and it pre-fills the sets with this week's progression and your last weights. XP for every working set and cardio minute. |
+| **Dungeons** | Workouts. Start one from your plan and it pre-fills the sets with this week's progression and your last weights. XP for every working set and cardio minute. Each lift has a **rest timer** set from the plan's rest time; it vibrates when rest is over. |
 | **New Records** | An estimated 1RM (Epley) above your previous best triggers a PR alert and +25 XP. |
 | **Penalty Quest** | Missed yesterday's quests? You get a 20-minute brisk walk worth +20 XP. |
 | **Routine Quests** | Your daily habits (wake time, no-phone, sun, deep work, Top 3 MVPs, reading, screens off), each with its own streak. +10 XP each, +30 for clearing them all. Edit them in Profile → System Settings. |
@@ -19,15 +19,19 @@ A fitness tracker for your 6-week training and nutrition block that works like a
 XP and stats are worked out again from your logs every time, so editing or deleting a workout never double-counts.
 
 ## Built-in plan: Hybrid Athlete Block 1 (bodyweight only, no gym)
+Runs on Mon / Wed / Fri, strength on Tue / Thu / Sat. The upper-body days sit between runs so your legs recover. The leg day is on Saturday, so it never takes the edge off the Wednesday mission or the Friday long run, and Sunday's rest follows it.
+
 | Day | Mission |
 |---|---|
-| Mon | Upper A: push focus (push-ups, table rows, pike push-ups, dips) |
-| Tue | Easy run + runner armour (calves, tibialis, core) |
-| Wed | Lower: Bulgarian split squats, single-leg RDL, sliding leg curls, step-ups, pogo hops |
+| Mon | Easy run + runner armour (calves, tibialis, core) |
+| Tue | Upper A: push focus (push-ups, table rows, pike push-ups, dips) |
+| Wed | **Hybrid Mission**: 400 m run + station rounds, logged for time (4 → 8 rounds) |
 | Thu | Upper B: pull focus (rows, backpack rows/curls, close-grip & decline push-ups) |
-| Fri | **Hybrid Mission**: 400 m run + station rounds, logged for time (4 → 8 rounds) |
-| Sat | Long easy run (35 → 50 min, week 6 = 5K time trial) |
+| Fri | Long easy run (35 → 50 min, week 6 = 5K time trial) |
+| Sat | Lower: Bulgarian split squats, single-leg RDL, sliding leg curls, step-ups, pogo hops |
 | Sun | Active recovery: walk + mobility (rest-day quest) |
+
+Saves on the old schedule move to this one automatically, and any edits you made to exercises are kept. A plan you imported from your coach is never reshuffled.
 
 Daily step target ramps 7,000 → 8,500 → 10,000.
 

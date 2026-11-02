@@ -31,14 +31,15 @@
   const run = (name, weeks, load, notes) => ex(name, 1, weeks[0], '—', load, notes, 'cardio', weeks);
 
   // Hybrid athlete block: bodyweight-only hypertrophy + aerobic base for future marathon / HYROX-style racing.
-  // 6 training days (Mon–Sat) + Sunday active recovery. dow = weekday (0 Sun … 6 Sat).
+  // Runs Mon/Wed/Fri, strength Tue/Thu/Sat, Sunday active recovery. dow = weekday (0 Sun … 6 Sat).
+  // Upper days sit between runs; the leg day is Saturday so it never blunts the Wed mission or Fri long run.
   const OLD_STARTER_NOTE = 'Starter template.';
   const DEFAULT_PROGRAM = {
-    id: 'hybrid-bw-v1',
+    id: 'hybrid-bw-v2',
     note: 'Hybrid Athlete Block 1 (bodyweight, no gym). Strength sets end 1–3 reps short of failure (RIR 1–3). When you beat the top of a rep range on every set, move to the next variation or add backpack load (books / water bottles). Easy runs = conversational pace, RPE 3–4/10 — if you can\'t speak in sentences, slow down or walk. Sunday = active recovery (walk + mobility).',
     steps: [7000, 7000, 8500, 8500, 10000, 10000],
     days: [
-      { dow: 1, name: 'Mon – Upper A: Push Protocol', exercises: [
+      { dow: 2, name: 'Tue – Upper A: Push Protocol', exercises: [
         ex('Push-up', 4, '8–15', '90 s', 'RIR 1–2', 'Ladder: incline → standard → feet-elevated → deficit (hands on books) → archer.'),
         ex('Inverted Table Row', 4, '8–12', '90 s', 'RIR 1–2', 'Lie under a sturdy table, grip edge, body straight. Ladder: knees bent → legs straight → feet on chair → backpack on chest.'),
         ex('Pike Push-up', 3, '6–12', '90 s', 'RIR 2', 'Hips high, head to a spot in front of hands. Harder: feet on a chair.'),
@@ -46,14 +47,14 @@
         ex('Towel Door Row', 3, '12–15', '60 s', 'RIR 1–2', 'Towel round a door handle (door closed, you on the hinge side). Squeeze shoulder blades.'),
         ex('Hollow Body Hold', 3, '20s', '45 s', 'Bodyweight', 'Low back glued to floor. Bend knees if it lifts.'),
       ]},
-      { dow: 2, name: 'Tue – Easy Run + Runner Armour', exercises: [
+      { dow: 1, name: 'Mon – Easy Run + Runner Armour', exercises: [
         run('Easy Run (Zone 2)', ['25 min (run 4 / walk 1)', '30 min (run 5 / walk 1)', '30 min continuous', '25 min easy', '35 min + 4×20s strides', '40 min + 6×20s strides'], 'RPE 3–4, conversational', 'Soft surface if possible. Strides = smooth fast 20s, full walk-back recovery.'),
         ex('Single-leg Calf Raise', 3, '12–20', '45 s', 'Bodyweight → backpack', 'On a stair edge, full stretch at bottom, 2 s pause at top. Shin & Achilles insurance.'),
         ex('Tibialis Raise', 2, '20', '45 s', 'Bodyweight', 'Back against wall, heels ~30 cm out, lift toes.'),
         ex('Side Plank', 3, '30s', '30 s', 'Each side', 'Hips high, straight line.'),
         ex('Dead Bug', 3, '8', '45 s', 'Each side', 'Slow. Exhale fully, low back stays down.'),
       ]},
-      { dow: 3, name: 'Wed – Lower: Leg Day Protocol', exercises: [
+      { dow: 6, name: 'Sat – Lower: Leg Day Protocol', exercises: [
         ex('Bulgarian Split Squat', 4, '8–12', '90 s', 'RIR 1–2 (backpack when >15 reps)', 'Rear foot on bed/chair. Reps are per leg. Torso slightly forward = more glutes.'),
         ex('Single-leg RDL', 3, '10–12', '75 s', 'Backpack in opposite hand', 'Per leg. Hips square, soft knee, feel the hamstring.'),
         ex('Sliding Leg Curl', 3, '8–12', '75 s', 'RIR 1–2', 'Socks on tiles / towel. Bridge up, slide heels out & back. Harder: single leg.'),
@@ -62,24 +63,26 @@
         ex('Single-leg Glute Bridge', 3, '12', '45 s', 'Each side', '2 s squeeze at top.'),
       ]},
       { dow: 4, name: 'Thu – Upper B: Pull Protocol', exercises: [
-        ex('Inverted Table Row', 4, '8–12', '90 s', 'RIR 1 (harder variation than Mon)', 'Feet elevated or backpack on chest once 12 reps is easy.'),
+        ex('Inverted Table Row', 4, '8–12', '90 s', 'RIR 1 (harder variation than Tue)', 'Feet elevated or backpack on chest once 12 reps is easy.'),
         ex('Close-grip Push-up', 4, '8–15', '90 s', 'RIR 1–2', 'Hands under shoulders, elbows brush ribs — triceps focus.'),
         ex('Backpack Bent-over Row', 3, '10–15', '75 s', 'Loaded backpack', 'Hinge to ~45°, pull bag to belly button.'),
         ex('Decline Push-up', 3, '8–15', '75 s', 'RIR 1–2', 'Feet on chair — upper chest & shoulders.'),
         ex('Backpack Curl', 3, '12–15', '60 s', 'Loaded backpack', 'Hold by the top handle/straps, slow lowering.'),
         ex('Prone Y-T-W Raise', 2, '10', '45 s', 'Bodyweight', 'Each letter. Thumbs up, squeeze upper back. Posture & shoulder health.'),
       ]},
-      { dow: 5, name: 'Fri – HYBRID MISSION (race sim)', exercises: [
+      { dow: 3, name: 'Wed – HYBRID MISSION (race sim)', exercises: [
         run('Mission Circuit', ['4 rounds', '5 rounds', '6 rounds', '4 rounds (easy)', '7 rounds', '8 rounds — FOR TIME'], 'Steady, RPE 6–7 (Wk6 race effort)',
           'Each round = 400m run (~2–3 min) + next station in order: 1) 10 burpee broad jumps 2) 20 walking lunges (backpack) 3) 30 m bear crawl 4) 15 push-ups 5) 15 backpack squat-to-press 6) 20 mountain climbers/side 7) 60 s backpack carry 8) 20 sit-ups. Log TOTAL minutes — beat it next week.'),
         ex('Plank', 2, '45s', '45 s', 'Bodyweight', 'Cool-down core. Then 5 min walk.'),
       ]},
-      { dow: 6, name: 'Sat – Long Run (Endurance Raid)', exercises: [
+      { dow: 5, name: 'Fri – Long Run (Endurance Raid)', exercises: [
         run('Long Easy Run', ['35 min run/walk', '40 min run/walk', '45 min easy', '35 min easy', '50 min easy', '5K TIME TRIAL + 15 min easy'], 'RPE 3–4 (Wk6 trial: hard but even)', 'Slow enough to talk. Water + pinch of salt + lemon after. Walk breaks are allowed, not failure.'),
         ex('Single-leg Calf Raise', 2, '15–20', '45 s', 'Bodyweight', 'Post-run.'),
       ]},
     ],
   };
+
+  DEFAULT_PROGRAM.days.sort((a, b) => a.dow - b.dow);
 
   const WEEK_FOCUS = [
     { t: 'Baseline', d: 'Find your level: pick the variation that hits the rep range at RIR 2. Runs are run/walk — keep them easy.' },
@@ -87,7 +90,7 @@
     { t: '+Load', d: 'Harder variation or add backpack weight. First continuous runs.' },
     { t: 'Deload', d: 'One fewer set, stop 3–4 reps short of failure, shorter runs. Recover and absorb.' },
     { t: 'Volume', d: '+1 set on every strength exercise. Longest runs so far + strides.' },
-    { t: 'Performance', d: 'Beat Week 3 on every lift. Fri: 8-round mission for time. Sat: 5K time trial.' },
+    { t: 'Performance', d: 'Beat Week 3 on every lift. Wed: 8-round mission for time. Fri: 5K time trial.' },
   ];
 
   const RANKS = [
@@ -189,7 +192,25 @@
       const oldT = { steps: 8000, protein: 140, water: 3, sleep: 7, fibre: 30, calories: 0 };
       Object.keys(oldT).forEach(k => { if (out.targets[k] === oldT[k]) out.targets[k] = b.targets[k]; });
     }
+    migrateScheduleV2(out.program);
     return out;
+  }
+  /** Block 1 v1 had strength Mon/Wed/Thu and runs Tue/Fri/Sat. Move it to runs Mon/Wed/Fri + strength
+   *  Tue/Thu/Sat, keeping any edits to exercises. Only touches a plan whose days are all the original
+   *  v1 days, so a coach-imported plan is never reshuffled. */
+  function migrateScheduleV2(prog) {
+    if (!prog || prog.id !== 'hybrid-bw-v1' || !Array.isArray(prog.days)) return;
+    const MAP = [['Mon – Upper A', 1, 2], ['Tue – Easy Run', 2, 1], ['Wed – Lower', 3, 6], ['Thu – Upper B', 4, 4], ['Fri – HYBRID MISSION', 5, 3], ['Sat – Long Run', 6, 5]];
+    const hit = d => MAP.find(([n, o]) => String(d.name).startsWith(n) && d.dow === o);
+    if (!prog.days.length || !prog.days.every(hit)) return;
+    prog.days.forEach(d => {
+      const to = hit(d)[2];
+      d.dow = to;
+      d.name = WEEKDAYS[to] + d.name.slice(3);
+      (d.exercises || []).forEach(e => { if (typeof e.load === 'string') e.load = e.load.replace('than Mon)', 'than Tue)'); });
+    });
+    prog.days.sort((a, b) => a.dow - b.dow);
+    prog.id = 'hybrid-bw-v2';
   }
   /** touch=false for bookkeeping writes (seen level etc.) that shouldn't count as new data for sync. */
   function save(touch = true) {
@@ -568,6 +589,9 @@ ${p.notes}
     $('#modalBody').innerHTML = m.html;
     $('#modalActions').innerHTML = m.actions.map((a, i) => `<button class="btn ${a.primary ? 'primary' : ''} ${a.danger ? 'danger' : ''}" data-mi="${i}">${esc(a.label)}</button>`).join('');
     $('#modalWrap').hidden = false;
+    // Move focus into the dialog so keyboard and screen-reader users land on its actions.
+    const focusBtn = $('#modalActions .primary') || $('#modalActions button:last-child');
+    if (focusBtn && !$('#modalBody textarea')) focusBtn.focus({ preventScroll: true });
     $('#modalActions').onclick = e => {
       const b = e.target.closest('[data-mi]'); if (!b) return;
       const a = m.actions[+b.dataset.mi];
@@ -582,6 +606,55 @@ ${p.notes}
     const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
     document.body.appendChild(t);
     clearTimeout(toastTimer); toastTimer = setTimeout(() => t.remove(), 2400);
+  }
+
+  // ------------------------------------------------------------------ rest timer
+  // Lives outside #view (re-renders never touch it) and floats above the tab bar.
+  const fmtClock = sec => { sec = Math.max(0, Math.ceil(sec)); return sec >= 60 ? `${Math.floor(sec / 60)}:${pad(sec % 60)}` : `${sec} s`; };
+  /** Rest length from the plan line ("rest 90 s", "rest 2 min"); 90 s when unknown. */
+  function restSecs(e) {
+    const m = String(e.plan || '').match(/rest\s+(\d+(?:\.\d+)?)\s*(s|sec|min|m)\b/i);
+    if (!m) return 90;
+    return Math.round(num(m[1]) * (/^m/i.test(m[2]) ? 60 : 1)) || 90;
+  }
+  let rest = null;
+  function restEl() {
+    let el = document.getElementById('restPill');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'restPill'; el.className = 'rest-pill'; el.setAttribute('role', 'timer');
+      el.innerHTML = '<i class="rest-fill"></i><span class="rest-label">REST</span><b class="rest-time mono"></b><button class="btn sm" data-r="add">+15 s</button><button class="btn sm ghost" data-r="stop" aria-label="Stop rest timer">✕</button>';
+      el.addEventListener('click', e => {
+        const b = e.target.closest('[data-r]'); if (!b || !rest) return;
+        if (b.dataset.r === 'add') { rest.end += 15000; rest.total += 15; tickRest(); } else stopRest();
+      });
+      document.body.appendChild(el);
+    }
+    return el;
+  }
+  function startRest(sec) {
+    clearInterval(rest && rest.timer);
+    rest = { end: Date.now() + sec * 1000, total: sec, timer: setInterval(tickRest, 250) };
+    const el = restEl(); el.classList.remove('out'); el.hidden = false;
+    tickRest();
+  }
+  function tickRest() {
+    if (!rest) return;
+    const left = (rest.end - Date.now()) / 1000;
+    const el = restEl();
+    el.querySelector('.rest-time').textContent = fmtClock(left);
+    el.querySelector('.rest-fill').style.transform = `scaleX(${Math.max(0, left / rest.total)})`;
+    if (left <= 0) {
+      stopRest();
+      if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+      toast('⏱ Rest over — next set');
+    }
+  }
+  function stopRest() {
+    if (!rest) return;
+    clearInterval(rest.timer); rest = null;
+    const el = document.getElementById('restPill');
+    if (el) { el.classList.add('out'); setTimeout(() => { if (!rest) el.hidden = true; }, 200); }
   }
 
   function checkProgressEvents() {
@@ -603,14 +676,37 @@ ${p.notes}
   }
 
   // ------------------------------------------------------------------ views
+  /** Re-draw the current page in place. Keeps the scroll position, so ticking a quest
+   *  halfway down the page doesn't throw you back to the top. Use go() to change page. */
   function render() {
-    document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+    document.querySelectorAll('#tabs button').forEach(b => {
+      const on = b.dataset.tab === tab;
+      b.classList.toggle('active', on);
+      if (on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+    });
     const D = derive();
     $('#topMeta').innerHTML = `Lv <b>${D.level}</b> · ${D.rank.r}-Rank<br>Week ${Math.max(0, Math.min(programWeek(), 99))}/${PROGRAM_WEEKS}`;
-    const v = $('#view');
-    v.innerHTML = ({ status: viewStatus, quests: viewQuests, train: viewTrain, plan: viewPlan, records: viewRecords, profile: viewProfile })[tab](D);
-    window.scrollTo({ top: 0 });
+    const y = window.scrollY;
+    $('#view').innerHTML = ({ status: viewStatus, quests: viewQuests, train: viewTrain, plan: viewPlan, records: viewRecords, profile: viewProfile })[tab](D);
+    window.scrollTo({ top: y });
   }
+
+  // Page order drives the slide direction of the page transition (profile sits "behind" status).
+  const PAGE_ORDER = ['profile', 'status', 'quests', 'train', 'plan', 'records'];
+  /** Navigate to a page: slide the new page in from the side it lives on, start at the top. */
+  function go(next) {
+    const prev = tab;
+    tab = next; planEdit = false;
+    const v = $('#view');
+    render();
+    window.scrollTo({ top: 0 });
+    if (prev === next) return;
+    const dir = PAGE_ORDER.indexOf(next) > PAGE_ORDER.indexOf(prev) ? 'fwd' : 'back';
+    v.classList.remove('enter-fwd', 'enter-back');
+    void v.offsetWidth; // restart the animation if the user taps quickly
+    v.classList.add('enter-' + dir);
+  }
+  $('#view').addEventListener('animationend', e => { if (e.target.id === 'view') e.target.classList.remove('enter-fwd', 'enter-back'); });
 
   function viewStatus(D) {
     const p = S.profile;
@@ -690,17 +786,17 @@ ${p.notes}
     return `
       <section class="panel">
         <div class="panel-title">
-          <button class="btn sm ghost" data-act="qday" data-delta="-1">‹</button>
+          <button class="btn sm nav-arrow" data-act="qday" data-delta="-1" aria-label="Previous day">‹</button>
           <span>Daily Quest · ${isToday ? 'Today' : fmtDate(k)}</span>
-          <button class="btn sm ghost" data-act="qday" data-delta="1" ${isToday ? 'disabled' : ''}>›</button>
+          <button class="btn sm nav-arrow" data-act="qday" data-delta="1" ${isToday ? 'disabled' : ''} aria-label="Next day">›</button>
         </div>
         <p class="small muted" style="margin-top:0">${isTrainingDay(k) ? 'Training day.' : 'Rest day — recovery quest active.'} Each quest: +10 XP. Clear all: +50 XP bonus.</p>
         ${qs.map(q => questRow(q, k)).join('')}
-        ${pen ? `<div class="quest penalty ${pen.done ? 'done' : ''}">
-            <div class="check">${pen.done ? '✓' : ''}</div>
+        ${pen ? `<label class="quest tap penalty ${pen.done ? 'done' : ''} ${popCls('penalty', pen.done)}">
+            <div class="check" aria-hidden="true">${pen.done ? '✓' : ''}</div>
             <div><div class="q-label">${pen.label}</div><div class="q-sub">${pen.sub} +20 XP</div></div>
-            <input type="checkbox" data-field="penalty" data-day="${k}" ${pen.done ? 'checked' : ''} aria-label="Penalty complete">
-          </div>` : ''}
+            <input class="sr-only" type="checkbox" data-field="penalty" data-day="${k}" ${pen.done ? 'checked' : ''}>
+          </label>` : ''}
       </section>
       ${allDone ? `<section class="panel center"><b class="gold mono">◆ DAILY QUEST CLEARED ◆</b><div class="small muted">Rewards applied: +${qs.length * 10 + 50} XP</div></section>` : ''}
       ${habitsPanel(k)}
@@ -721,10 +817,10 @@ ${p.notes}
     const n = hs.filter(h => h.done).length;
     return `<section class="panel">
       <div class="panel-title">Routine Quests <small>${n}/${hs.length} · +10 each · all: +30</small></div>
-      ${hs.map(h => { const st = habitStreak(h.id); return `<label class="quest ${h.done ? 'done' : ''}">
-        <div class="check">${h.done ? '✓' : ''}</div>
+      ${hs.map(h => { const st = habitStreak(h.id); return `<label class="quest tap ${h.done ? 'done' : ''} ${popCls('h_' + h.id, h.done)}">
+        <div class="check" aria-hidden="true">${h.done ? '✓' : ''}</div>
         <div><div class="q-label">${esc(h.label)}</div><div class="q-sub">${h.stat}${st ? ` · 🔥 ${st}-day streak` : ''}</div></div>
-        <input type="checkbox" data-field="h_${esc(h.id)}" data-day="${k}" ${h.done ? 'checked' : ''}>
+        <input class="sr-only" type="checkbox" data-field="h_${esc(h.id)}" data-day="${k}" ${h.done ? 'checked' : ''}>
       </label>`; }).join('')}
       ${n === hs.length ? '<div class="center gold mono small" style="margin-top:8px">◆ ROUTINE CLEARED ◆</div>' : ''}
     </section>`;
@@ -752,16 +848,21 @@ ${p.notes}
     </section>`;
   }
 
+  // The quest the user just completed gets a one-off "cleared" pulse on the next render.
+  let justDone = '';
+  const popCls = (id, done) => (done && id === justDone ? 'pop' : '');
+
   function questRow(q, k) {
     let ctl = '';
     if (q.input) ctl = `<div class="row"><button class="btn sm" data-act="bump" data-field="${q.id}" data-day="${k}" data-step="${q.step}" aria-label="Add ${q.step}">+</button><input inputmode="decimal" data-field="${q.id}" data-day="${k}" value="${q.value || ''}" placeholder="0"></div>`;
-    else if (q.toggle) ctl = `<input type="checkbox" data-field="${q.id}" data-day="${k}" ${q.done ? 'checked' : ''} aria-label="${esc(q.label)}">`;
+    else if (q.toggle) ctl = `<input class="sr-only" type="checkbox" data-field="${q.id}" data-day="${k}" ${q.done ? 'checked' : ''}>`;
     else if (q.auto) ctl = q.done ? '<span class="small green mono">CLEARED</span>' : `<button class="btn sm" data-act="go" data-tab="train">Go</button>`;
     const sub = q.input ? `${q.value || 0} / ${q.target} ${q.unit} · ${q.stat}` : `${q.stat}`;
-    return `<div class="quest ${q.done ? 'done' : ''}" data-qrow="${q.id}">
-      <div class="check">${q.done ? '✓' : ''}</div>
+    const tag = q.toggle ? 'label' : 'div'; // a toggle row is one big tap target
+    return `<${tag} class="quest ${q.toggle ? 'tap' : ''} ${q.done ? 'done' : ''} ${popCls(q.id, q.done)}" data-qrow="${q.id}">
+      <div class="check" aria-hidden="true">${q.done ? '✓' : ''}</div>
       <div><div class="q-label">${esc(q.label)}</div><div class="q-sub">${sub}</div></div>
-      ${ctl}</div>`;
+      ${ctl}</${tag}>`;
   }
 
   function newDraft(dayIdx) {
@@ -829,9 +930,9 @@ ${p.notes}
             <input inputmode="decimal" data-ex="${i}" data-set="${j}" data-k="w" value="${esc(s.w)}" placeholder="BW" aria-label="Set ${j + 1} weight">
             <input inputmode="numeric" data-ex="${i}" data-set="${j}" data-k="r" value="${esc(s.r)}" placeholder="reps" aria-label="Set ${j + 1} reps">
             <button class="x-btn" data-act="delset" data-ex="${i}" data-set="${j}" aria-label="Remove set">×</button></div>`).join('')}
-         <button class="btn sm" data-act="addset" data-ex="${i}">+ Set</button>`;
+         <div class="row"><button class="btn sm" data-act="addset" data-ex="${i}">+ Set</button><span class="spacer"></span><button class="btn sm ghost-line" data-act="rest" data-sec="${restSecs(e)}" aria-label="Start ${fmtClock(restSecs(e))} rest timer">⏱ Rest ${fmtClock(restSecs(e))}</button></div>`;
     return `<div class="ex">
-      <div class="ex-head"><input data-ex="${i}" data-k="name" value="${esc(e.name)}" placeholder="Exercise name"><button class="x-btn" data-act="delex" data-ex="${i}" aria-label="Remove exercise">×</button></div>
+      <div class="ex-head"><input data-ex="${i}" data-k="name" value="${esc(e.name)}" placeholder="Exercise name"><button class="x-btn" data-act="delex" data-ex="${i}" aria-label="Remove ${esc(e.name || 'exercise')}">×</button></div>
       ${e.plan ? `<div class="ex-plan">PLAN: ${esc(e.plan)}</div>` : ''}
       ${e.hint ? `<div class="ex-plan" style="color:var(--gold)">${esc(e.hint)}</div>` : ''}
       ${body}
@@ -989,7 +1090,7 @@ ${p.notes}
   // ------------------------------------------------------------------ events
   $('#tabs').addEventListener('click', e => {
     const b = e.target.closest('button[data-tab]'); if (!b) return;
-    tab = b.dataset.tab; planEdit = false; render();
+    go(b.dataset.tab);
   });
 
   const view = $('#view');
@@ -1034,7 +1135,7 @@ ${p.notes}
 
   view.addEventListener('change', e => {
     const t = e.target;
-    if (t.type === 'checkbox' && t.dataset.day) { render(); checkProgressEvents(); }
+    if (t.type === 'checkbox' && t.dataset.day) { justDone = t.checked ? t.dataset.field : ''; render(); justDone = ''; checkProgressEvents(); }
     else if (t.dataset.draft === 'pain') render();
     else if (t.dataset.set === 'startDate' && t.value) { S.startDate = t.value; save(); }
     else if (t.dataset.day && t.dataset.field !== 'note') { render(); checkProgressEvents(); }
@@ -1045,6 +1146,7 @@ ${p.notes}
     // update the tick / subtitle without re-rendering (keeps keyboard focus)
     const row = input.closest('[data-qrow]'); if (!row) return;
     const q = questsFor(input.dataset.day).find(x => x.id === row.dataset.qrow); if (!q) return;
+    if (q.done && !row.classList.contains('done')) { row.classList.remove('pop'); void row.offsetWidth; row.classList.add('pop'); }
     row.classList.toggle('done', q.done);
     row.querySelector('.check').textContent = q.done ? '✓' : '';
     row.querySelector('.q-sub').textContent = `${q.value || 0} / ${q.target} ${q.unit} · ${q.stat}`;
@@ -1054,25 +1156,33 @@ ${p.notes}
     const b = e.target.closest('[data-act]'); if (!b) return;
     const a = b.dataset.act;
     switch (a) {
-      case 'go': tab = b.dataset.tab; render(); break;
+      case 'go': go(b.dataset.tab); break;
       case 'qday': {
         const n = addDays(questDate, +b.dataset.delta);
-        if (n <= dkey()) { questDate = n; render(); }
+        if (n <= dkey()) { questDate = n; render(); window.scrollTo({ top: 0 }); }
         break;
       }
       case 'bump': {
         const d = day(b.dataset.day); const f = b.dataset.field;
-        d[f] = String(+(num(d[f]) + num(b.dataset.step)).toFixed(2)); save(); render(); checkProgressEvents();
+        const was = questsFor(b.dataset.day).find(q => q.id === f)?.done;
+        d[f] = String(+(num(d[f]) + num(b.dataset.step)).toFixed(2)); save();
+        justDone = was ? '' : f; render(); justDone = ''; checkProgressEvents();
         break;
       }
-      case 'start': newDraft(+b.dataset.day); render(); break;
+      case 'start': newDraft(+b.dataset.day); render(); window.scrollTo({ top: 0 }); break;
       case 'discard':
-        if (await sys('<h3>ABANDON DUNGEON?</h3><p class="center">This in-progress workout will be lost.</p>', [{ label: 'Cancel', value: 0 }, { label: 'Abandon', danger: true, value: 1 }])) { S.draft = null; save(); render(); }
+        if (await sys('<h3>ABANDON DUNGEON?</h3><p class="center">This in-progress workout will be lost.</p>', [{ label: 'Cancel', value: 0 }, { label: 'Abandon', danger: true, value: 1 }])) { S.draft = null; stopRest(); save(); render(); window.scrollTo({ top: 0 }); }
         break;
       case 'addex':
         S.draft.exercises.push(b.dataset.type === 'cardio' ? { name: '', type: 'cardio', min: '', dist: '', note: '' } : { name: '', type: 'strength', sets: [{ w: '', r: '' }], note: '' });
         save(); render(); break;
-      case 'delex': S.draft.exercises.splice(+b.dataset.ex, 1); save(); render(); break;
+      case 'delex': {
+        const ex = S.draft.exercises[+b.dataset.ex];
+        const logged = ex.type === 'cardio' ? num(ex.min) > 0 : (ex.sets || []).some(s => String(s.r).trim() !== '');
+        if (logged && !(await sys(`<h3>REMOVE EXERCISE?</h3><p class="center">${esc(ex.name || 'This exercise')} has logged sets.</p>`, [{ label: 'Cancel', value: 0 }, { label: 'Remove', danger: true, value: 1 }]))) break;
+        S.draft.exercises.splice(+b.dataset.ex, 1); save(); render(); break;
+      }
+      case 'rest': startRest(+b.dataset.sec || 90); break;
       case 'addset': {
         const ex = S.draft.exercises[+b.dataset.ex];
         const last = ex.sets[ex.sets.length - 1] || { w: '', r: '' };
@@ -1089,7 +1199,7 @@ ${p.notes}
         if (S.draft && !(await sys('<h3>REPLACE DRAFT?</h3><p class="center">You have a workout in progress. Replace it with this log for editing?</p>', [{ label: 'Cancel', value: 0 }, { label: 'Replace', primary: true, value: 1 }]))) break;
         const w = S.workouts.find(x => x.id === b.dataset.id);
         S.draft = JSON.parse(JSON.stringify(w)); S.draft.editing = true;
-        save(); tab = 'train'; render(); break;
+        save(); go('train'); break;
       }
       case 'delw':
         if (await sys('<h3>DELETE LOG?</h3><p class="center">XP and records from this workout will be removed.</p>', [{ label: 'Cancel', value: 0 }, { label: 'Delete', danger: true, value: 1 }])) {
@@ -1107,11 +1217,11 @@ ${p.notes}
       }
       case 'wipe':
         if (await sys('<h3 class="red">ERASE ALL DATA?</h3><p class="center">This cannot be undone. Export a backup first.</p>', [{ label: 'Cancel', value: 0 }, { label: 'Erase', danger: true, value: 1 }])) {
-          localStorage.removeItem(STORE_KEY); S = blankState(); save(); tab = 'status'; render(); intro();
+          localStorage.removeItem(STORE_KEY); S = blankState(); save(); go('status'); intro();
         }
         break;
       case 'pweek': planWeek = +b.dataset.w; render(); break;
-      case 'planedit': planEdit = !planEdit; render(); break;
+      case 'planedit': planEdit = !planEdit; render(); window.scrollTo({ top: 0 }); break;
       case 'addpe': S.program.days[+b.dataset.d].exercises.push(ex('', 3, '10', '90 s', '')); save(); render(); break;
       case 'delpe': S.program.days[+b.dataset.d].exercises.splice(+b.dataset.e, 1); save(); render(); break;
       case 'addday': S.program.days.push({ name: `Day ${S.program.days.length + 1} – New Session`, exercises: [] }); save(); render(); break;
@@ -1152,8 +1262,8 @@ ${p.notes}
         <p class="small">Pause any movement that caused <b>sharp pain, joint instability or unusual symptoms</b> until your coach reviews it. Share this log with Claude for alternatives. If it persists or is severe, see a physio or doctor.</p></div>`;
     }
     if (!w.energy && !w.difficulty) html += `<p class="small muted center">Tip: fill in the debrief (energy, difficulty) for +10 XP and better coaching.</p>`;
-    tab = 'records';
-    render();
+    stopRest();
+    go('records');
     const choice = await sys(html, [{ label: 'Share log .txt', value: 'share' }, { label: 'Done', primary: true, value: 'done' }]);
     if (choice === 'share') await shareOrDownload(`workout_${w.date}.txt`, workoutTxt(w));
     checkProgressEvents();
@@ -1388,7 +1498,7 @@ Bike Intervals | 1 | 10x30s | — | hard | warm up first | cardio`;
       <p>Clear <b>Daily Quests</b> (steps, protein, fibre, water, sleep, training) and <b>Dungeons</b> (workouts) to earn XP, raise your stats and climb from <b>E-Rank</b> to <b>S-Rank</b> over your 6-week program.</p>
       <p class="small muted">Step 1: complete your profile and send it to your coach. All data stays on this device.</p>`,
       [{ label: 'Accept', primary: true, value: 1 }]).then(() => {
-      S.onboarded = true; S.seenPenalty = dkey(); save(); tab = 'profile'; render();
+      S.onboarded = true; S.seenPenalty = dkey(); save(); go('profile');
     });
   }
 
