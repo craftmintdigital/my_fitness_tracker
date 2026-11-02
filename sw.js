@@ -1,6 +1,7 @@
 // Offline cache for AWAKEN. Bump VERSION when files change.
-const VERSION = 'awaken-v5';
-const FILES = ['./', './index.html', './styles.css', './app.js', './manifest.webmanifest', './icon.svg'];
+const VERSION = 'awaken-v6';
+const FILES = ['./', './index.html', './styles.css', './app.js', './manifest.webmanifest', './icon.svg',
+  './fonts/oxanium-var.woff2', './fonts/atkinson-400.woff2', './fonts/atkinson-700.woff2', './fonts/atkinson-400-italic.woff2'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
