@@ -55,4 +55,12 @@ The app is static files, so any static host works. The easiest option is **GitHu
 
 Local test: `python3 -m http.server` then open http://localhost:8000.
 
-**Back up regularly** (Records → Export backup .txt). Clearing browser data or uninstalling deletes the local save.
+## Cloud sync (optional): secret GitHub Gist
+Records → **Cloud Sync**. Paste a GitHub **classic** token with only the `gist` scope (github.com → Settings → Developer settings → Personal access tokens → Tokens (classic)). The app creates a secret gist and auto-syncs about 15 s after each change and whenever you leave the app. The gist contains:
+- `awaken_save.json`: the full save (restore it on a new device with the same token + Gist ID)
+- `coach_report_all.txt` / `coach_report_last7.txt`: ready to attach to a Claude chat
+- `user_fitness_profile.txt`
+
+Download it all from the gist page → **Download ZIP**. The token is stored only on your device and is never uploaded. A *secret* gist is unlisted, but anyone with its URL can view it, so don't share the link.
+
+Without sync, data lives only on the device: back up regularly (Records → Export backup .txt).

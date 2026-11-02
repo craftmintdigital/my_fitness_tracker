@@ -191,9 +191,12 @@
     }
     return out;
   }
-  function save() {
+  /** touch=false for bookkeeping writes (seen level etc.) that shouldn't count as new data for sync. */
+  function save(touch = true) {
+    if (touch) S.updatedAt = Date.now();
     try { localStorage.setItem(STORE_KEY, JSON.stringify(S)); }
     catch (e) { toast('⚠ Could not save — storage full?'); }
+    if (touch) scheduleSync();
   }
   const day = k => (S.days[k] ||= {});
 
@@ -596,7 +599,7 @@ ${p.notes}
       S.seenPenalty = today;
       sys(`<h3 class="red">PENALTY QUEST</h3><p>Yesterday's daily quests were not completed.</p><p>A penalty quest has been issued: <b>20 minutes of brisk walking</b> today.</p><p class="small muted">Missing a day is fine — consistency over perfection. Just get back on track.</p>`, [{ label: 'Accept', primary: true }]);
     }
-    save();
+    save(false);
   }
 
   // ------------------------------------------------------------------ views
@@ -917,8 +920,27 @@ ${p.notes}
       </section>
 
       <section class="panel">
+        <div class="panel-title">Cloud Sync <small>${syncStatusText()}</small></div>
+        ${SYNC.token ? `
+          <p class="small muted" style="margin-top:0">Auto-syncs to your private GitHub Gist ~15 s after each change. Download everything (save, full coach report, profile) from the gist page → <i>Download ZIP</i>.</p>
+          <div class="row wrap">
+            <button class="btn primary" data-act="syncnow">Sync now</button>
+            <button class="btn" data-act="syncpull">Load from cloud</button>
+            ${SYNC.gistId ? `<a class="btn" href="https://gist.github.com/${esc(SYNC.gistId)}" target="_blank" rel="noopener">Open gist</a>` : ''}
+            <button class="btn sm danger" data-act="syncoff">Disconnect</button>
+          </div>` : `
+          <p class="small muted" style="margin-top:0">Back up online to a <b>secret GitHub Gist</b> in your own account and download it anytime.<br>
+          1) github.com → Settings → Developer settings → Personal access tokens → <b>Tokens (classic)</b> → Generate.<br>
+          2) Tick <b>only</b> the <span class="mono">gist</span> scope, no expiry (or 1 year).<br>
+          3) Paste it below. On a new phone, paste the same token + your Gist ID to restore.</p>
+          <label class="f"><span>GitHub token (stays on this device only)</span><input type="password" autocomplete="off" data-sync="token" placeholder="ghp_…"></label>
+          <label class="f"><span>Gist ID (leave blank first time — it's created for you)</span><input data-sync="gistId" value="${esc(SYNC.gistId || '')}"></label>
+          <button class="btn primary" data-act="syncconnect">Connect</button>`}
+      </section>
+
+      <section class="panel">
         <div class="panel-title">Save Data</div>
-        <p class="small muted" style="margin-top:0">Everything is stored only on this device. Back up regularly — clearing browser data erases it.</p>
+        <p class="small muted" style="margin-top:0">${SYNC.token ? 'Stored on this device and synced to your gist.' : 'Stored only on this device — clearing browser data erases it. Turn on Cloud Sync or back up regularly.'}</p>
         <div class="row wrap">
           <button class="btn" data-act="backup">Export backup .txt</button>
           <button class="btn" data-act="restore">Import backup</button>
@@ -986,6 +1008,7 @@ ${p.notes}
       if (t.dataset.set !== undefined) ex.sets[+t.dataset.set][t.dataset.k] = val; else ex[t.dataset.k] = val;
       save(); return;
     }
+    if (t.dataset.sync) { pendingSync[t.dataset.sync] = val.trim(); return; }
     if (t.dataset.prof) { S.profile[t.dataset.prof] = val; save(); return; }
     if (t.dataset.target) { S.targets[t.dataset.target] = num(val); save(); return; }
     if (t.dataset.setting === 'wakeRamp') { S.wakeRamp = val.split('/').map(x => x.trim()).filter(x => /^\d{1,2}:\d\d$/.test(x)).map(x => x.padStart(5, '0')); save(); return; }
@@ -1100,6 +1123,14 @@ ${p.notes}
         break;
       case 'pasteprog': importProgramDialog(); break;
       case 'pasteprofile': importProfileDialog(); break;
+      case 'syncconnect': await syncConnect(); break;
+      case 'syncnow': await syncPush(true); render(); break;
+      case 'syncpull': await syncPull(true); break;
+      case 'syncoff':
+        if (await sys('<h3>DISCONNECT CLOUD SYNC?</h3><p class="center">Your gist stays on GitHub. This device stops syncing and forgets the token.</p>', [{ label: 'Cancel', value: 0 }, { label: 'Disconnect', danger: true, value: 1 }])) {
+          SYNC = {}; saveSyncCfg(); render();
+        }
+        break;
     }
   });
 
@@ -1221,6 +1252,134 @@ Bike Intervals | 1 | 10x30s | — | hard | warm up first | cardio`;
     }
   });
 
+  // ------------------------------------------------------------------ cloud sync (GitHub Gist)
+  // Token is kept in its own localStorage key so it never ends up in backups or the gist itself.
+  const SYNC_KEY = 'awaken.sync.v1';
+  const GIST_SAVE = 'awaken_save.json';
+  let SYNC = (() => { try { return JSON.parse(localStorage.getItem(SYNC_KEY)) || {}; } catch { return {}; } })();
+  const pendingSync = {};
+  let syncTimer = null, syncBusy = false, syncErr = '';
+  const saveSyncCfg = () => { try { localStorage.setItem(SYNC_KEY, JSON.stringify(SYNC)); } catch {} };
+
+  function syncStatusText() {
+    if (!SYNC.token) return 'off';
+    if (syncBusy) return 'syncing…';
+    if (syncErr) return '⚠ ' + syncErr;
+    if (!SYNC.lastSync) return 'not synced yet';
+    const dirty = (S.updatedAt || 0) > SYNC.lastSync;
+    const t = new Date(SYNC.lastSync);
+    return `${dirty ? 'pending · ' : ''}last ${t.toLocaleDateString('en', { day: 'numeric', month: 'short' })} ${pad(t.getHours())}:${pad(t.getMinutes())}`;
+  }
+
+  async function gh(path, opts = {}) {
+    const ctrl = new AbortController();
+    const to = setTimeout(() => ctrl.abort(), 20000);
+    try {
+      const res = await fetch('https://api.github.com' + path, {
+        ...opts, signal: ctrl.signal,
+        headers: { Accept: 'application/vnd.github+json', Authorization: `Bearer ${SYNC.token}`, 'X-GitHub-Api-Version': '2022-11-28', ...(opts.body ? { 'Content-Type': 'application/json' } : {}) },
+      });
+      if (res.status === 401) throw new Error('token rejected');
+      if (res.status === 404) throw new Error('gist not found');
+      if (!res.ok) throw new Error('GitHub error ' + res.status);
+      return res.json();
+    } catch (e) {
+      throw new Error(e.name === 'AbortError' ? 'timed out' : (e.message === 'Failed to fetch' ? 'offline' : e.message));
+    } finally { clearTimeout(to); }
+  }
+
+  function gistFiles() {
+    return {
+      [GIST_SAVE]: { content: JSON.stringify({ app: 'AWAKEN', exported: new Date().toISOString(), data: S }) },
+      'coach_report_all.txt': { content: reportTxt(0) },
+      'coach_report_last7.txt': { content: reportTxt(7) },
+      'user_fitness_profile.txt': { content: profileTxt() },
+    };
+  }
+
+  function scheduleSync() {
+    if (!SYNC.token || !SYNC.gistId) return;
+    clearTimeout(syncTimer);
+    syncTimer = setTimeout(() => syncPush(false), 15000);
+  }
+
+  async function syncPush(manual) {
+    if (!SYNC.token || syncBusy) return false;
+    if (!navigator.onLine) { syncErr = 'offline — will retry'; if (manual) toast('Offline — will sync when back online'); return false; }
+    syncBusy = true;
+    try {
+      const body = JSON.stringify({ description: 'AWAKEN fitness save (auto-synced)', files: gistFiles() });
+      if (SYNC.gistId) await gh(`/gists/${SYNC.gistId}`, { method: 'PATCH', body });
+      else { const g = await gh('/gists', { method: 'POST', body: JSON.stringify({ description: 'AWAKEN fitness save (auto-synced)', public: false, files: gistFiles() }) }); SYNC.gistId = g.id; }
+      SYNC.lastSync = Date.now(); syncErr = ''; saveSyncCfg();
+      if (manual) toast('☁ Synced');
+      return true;
+    } catch (e) {
+      syncErr = e.message; if (manual) toast('Sync failed: ' + e.message);
+      return false;
+    } finally { syncBusy = false; }
+  }
+
+  async function fetchRemote() {
+    const g = await gh(`/gists/${SYNC.gistId}`);
+    const f = g.files && g.files[GIST_SAVE];
+    if (!f) throw new Error('no save in gist');
+    let text = f.content;
+    if (f.truncated) text = await (await fetch(f.raw_url)).text();
+    const obj = JSON.parse(text);
+    return obj.data || obj;
+  }
+
+  async function syncPull(manual) {
+    if (!SYNC.token || !SYNC.gistId) return;
+    try {
+      const remote = await fetchRemote();
+      const rT = remote.updatedAt || 0, lT = S.updatedAt || 0;
+      if (manual) {
+        const ok = await sys(`<h3>LOAD FROM CLOUD?</h3><p class="center">Cloud save: ${remote.workouts.length} workouts, last change ${rT ? new Date(rT).toLocaleString() : 'unknown'}.<br>This replaces the data on this device.</p>`, [{ label: 'Cancel', value: 0 }, { label: 'Load', primary: true, value: 1 }]);
+        if (!ok) return;
+      } else if (rT <= lT) {
+        return; // this device is up to date (or newer — push will follow)
+      } else if (lT > (SYNC.lastSync || 0)) {
+        const pick = await sys(`<h3>SYNC CONFLICT</h3><p class="center">Both this device and the cloud have changes.<br>Cloud: ${new Date(rT).toLocaleString()}<br>This device: ${new Date(lT).toLocaleString()}</p>`,
+          [{ label: 'Keep this device', value: 'local' }, { label: 'Use cloud', primary: true, value: 'cloud' }]);
+        if (pick === 'local') { await syncPush(true); return; }
+      }
+      S = migrate(remote); save(false);
+      SYNC.lastSync = Date.now(); syncErr = ''; saveSyncCfg();
+      render(); toast('☁ Loaded from cloud');
+    } catch (e) {
+      syncErr = e.message; if (manual) toast('Load failed: ' + e.message);
+    }
+  }
+
+  async function syncConnect() {
+    const token = pendingSync.token, gistId = pendingSync.gistId ?? SYNC.gistId;
+    if (!token) { toast('Paste your GitHub token first'); return; }
+    SYNC = { token, gistId: gistId || '' };
+    try {
+      if (gistId) {
+        const remote = await fetchRemote();
+        const ok = await sys(`<h3>EXISTING SAVE FOUND</h3><p class="center">${remote.workouts.length} workouts in the cloud.</p>`,
+          [{ label: 'Overwrite cloud with this device', value: 'push' }, { label: 'Load cloud data', primary: true, value: 'pull' }]);
+        if (ok === 'pull') { S = migrate(remote); save(false); SYNC.lastSync = Date.now(); }
+        else if (!(await syncPush(true))) throw new Error(syncErr);
+      } else if (!(await syncPush(true))) {
+        throw new Error(syncErr); // creating the gist validates token + gist scope
+      }
+      saveSyncCfg(); render();
+      if (SYNC.gistId) sys(`<h3>CLOUD SYNC ACTIVE</h3><p class="center">Gist ID:<br><b class="mono gold">${esc(SYNC.gistId)}</b></p><p class="small muted">Save this ID with your token in a password manager — you need both to restore on a new device.</p>`);
+    } catch (e) {
+      SYNC = {}; saveSyncCfg(); render();
+      sys(`<h3 class="red">CONNECT FAILED</h3><p class="center">${esc(e.message)}</p><p class="small muted">Check the token is a <b>classic</b> token with the <b>gist</b> scope.</p>`);
+    }
+  }
+
+  window.addEventListener('online', () => { if ((S.updatedAt || 0) > (SYNC.lastSync || 0)) syncPush(false); });
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden' && SYNC.token && (S.updatedAt || 0) > (SYNC.lastSync || 0)) { clearTimeout(syncTimer); syncPush(false); }
+  });
+
   // ------------------------------------------------------------------ boot
   function intro() {
     if (S.onboarded) return;
@@ -1243,5 +1402,10 @@ Bike Intervals | 1 | 10x30s | — | hard | warm up first | cardio`;
 
   render();
   intro();
-  if (S.onboarded) checkProgressEvents();
+  (async () => {
+    // Pull newer data from another device before awarding level-ups etc.
+    if (SYNC.token && SYNC.gistId && navigator.onLine) await syncPull(false);
+    if (S.onboarded) checkProgressEvents();
+    if (SYNC.token && (S.updatedAt || 0) > (SYNC.lastSync || 0)) scheduleSync();
+  })();
 })();
