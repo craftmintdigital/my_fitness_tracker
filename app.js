@@ -31,63 +31,65 @@
   const run = (name, weeks, load, notes) => ex(name, 1, weeks[0], '—', load, notes, 'cardio', weeks);
 
   // Hybrid athlete block: bodyweight-only hypertrophy + aerobic base for future marathon / HYROX-style racing.
-  // Runs Mon/Wed/Fri, strength Tue/Thu/Sat, Sunday active recovery. dow = weekday (0 Sun … 6 Sat).
-  // Upper days sit between runs; the leg day is Saturday so it never blunts the Wed mission or Fri long run.
+  // v3, built from the concurrent-training research (see README "Why the plan looks like this"):
+  //  - Runs Mon/Wed/Fri, strength Tue/Thu/Sat, Sunday active recovery. dow = weekday (0 Sun … 6 Sat).
+  //  - Legs twice a week (Tue squat pattern, Sat hinge pattern) with plyometrics, because strength + jumps
+  //    on 2+ days a week is what improves running economy. Thu is upper-only so legs are fresh for Fri's long run.
+  //  - Mostly easy running; one race-style session (Wed) a week; weekly run time grows < 30 %.
   const OLD_STARTER_NOTE = 'Starter template.';
   const DEFAULT_PROGRAM = {
-    id: 'hybrid-bw-v2',
-    note: 'Hybrid Athlete Block 1 (bodyweight, no gym). Strength sets end 1–3 reps short of failure (RIR 1–3). When you beat the top of a rep range on every set, move to the next variation or add backpack load (books / water bottles). Easy runs = conversational pace, RPE 3–4/10 — if you can\'t speak in sentences, slow down or walk. Sunday = active recovery (walk + mobility).',
+    id: 'hybrid-bw-v3',
+    note: 'Hybrid Athlete Block 1 (bodyweight, no gym). Strength sets end 1–3 reps short of failure (RIR 1–3); on the last set of each exercise go to 1 rep short. Bodyweight and backpack sets build muscle as well as heavy weights when taken that close to failure. When you beat the top of a rep range on every set, move to the next variation or add backpack load (books, water bottles). Easy runs are conversational, RPE 3–4/10: if you can\'t speak in sentences, slow down or walk. Wednesday is the only hard session. Sunday is active recovery (walk + mobility).',
     steps: [7000, 7000, 8500, 8500, 10000, 10000],
     days: [
-      { dow: 2, name: 'Tue – Upper A: Push Protocol', exercises: [
-        ex('Push-up', 4, '8–15', '90 s', 'RIR 1–2', 'Ladder: incline → standard → feet-elevated → deficit (hands on books) → archer.'),
-        ex('Inverted Table Row', 4, '8–12', '90 s', 'RIR 1–2', 'Lie under a sturdy table, grip edge, body straight. Ladder: knees bent → legs straight → feet on chair → backpack on chest.'),
-        ex('Pike Push-up', 3, '6–12', '90 s', 'RIR 2', 'Hips high, head to a spot in front of hands. Harder: feet on a chair.'),
-        ex('Chair Dip', 3, '8–15', '90 s', 'RIR 2', 'Two sturdy chairs or bed edge. Stop if front of shoulder hurts.'),
-        ex('Towel Door Row', 3, '12–15', '60 s', 'RIR 1–2', 'Towel round a door handle (door closed, you on the hinge side). Squeeze shoulder blades.'),
-        ex('Hollow Body Hold', 3, '20s', '45 s', 'Bodyweight', 'Low back glued to floor. Bend knees if it lifts.'),
-      ]},
-      { dow: 1, name: 'Mon – Easy Run + Runner Armour', exercises: [
-        run('Easy Run (Zone 2)', ['25 min (run 4 / walk 1)', '30 min (run 5 / walk 1)', '30 min continuous', '25 min easy', '35 min + 4×20s strides', '40 min + 6×20s strides'], 'RPE 3–4, conversational', 'Soft surface if possible. Strides = smooth fast 20s, full walk-back recovery.'),
-        ex('Single-leg Calf Raise', 3, '12–20', '45 s', 'Bodyweight → backpack', 'On a stair edge, full stretch at bottom, 2 s pause at top. Shin & Achilles insurance.'),
-        ex('Tibialis Raise', 2, '20', '45 s', 'Bodyweight', 'Back against wall, heels ~30 cm out, lift toes.'),
-        ex('Side Plank', 3, '30s', '30 s', 'Each side', 'Hips high, straight line.'),
+      { dow: 1, name: 'Mon – Easy Run + Strides', exercises: [
+        run('Easy Run (Zone 2)', ['25 min (run 4 / walk 1)', '30 min (run 5 / walk 1)', '30 min continuous + 4×20s strides', '25 min easy', '35 min + 6×20s strides', '35 min + 6×20s strides'], 'RPE 3–4, conversational', 'Soft surface if possible. Strides = smooth, fast 20 s with a full walk-back recovery; they teach speed without fatigue.'),
+        ex('Single-leg Calf Raise', 3, '12–20', '45 s', 'Bodyweight → backpack', 'On a stair edge, full stretch at the bottom, 2 s pause at the top. Shin and Achilles insurance.'),
+        ex('Tibialis Raise', 2, '20', '45 s', 'Bodyweight', 'Back against a wall, heels ~30 cm out, lift your toes.'),
         ex('Dead Bug', 3, '8', '45 s', 'Each side', 'Slow. Exhale fully, low back stays down.'),
       ]},
-      { dow: 6, name: 'Sat – Lower: Leg Day Protocol', exercises: [
-        ex('Bulgarian Split Squat', 4, '8–12', '90 s', 'RIR 1–2 (backpack when >15 reps)', 'Rear foot on bed/chair. Reps are per leg. Torso slightly forward = more glutes.'),
-        ex('Single-leg RDL', 3, '10–12', '75 s', 'Backpack in opposite hand', 'Per leg. Hips square, soft knee, feel the hamstring.'),
-        ex('Sliding Leg Curl', 3, '8–12', '75 s', 'RIR 1–2', 'Socks on tiles / towel. Bridge up, slide heels out & back. Harder: single leg.'),
-        ex('Step-up', 3, '10', '60 s', 'Backpack', 'Per leg. Knee-height chair/stair, drive through the front heel, no push-off from back leg.'),
-        ex('Pogo Hops', 3, '20', '60 s', 'Bodyweight', 'Small, quick, stiff ankles. Tendon prep for running. Skip if shins are sore.'),
-        ex('Single-leg Glute Bridge', 3, '12', '45 s', 'Each side', '2 s squeeze at top.'),
-      ]},
-      { dow: 4, name: 'Thu – Upper B: Pull Protocol', exercises: [
-        ex('Inverted Table Row', 4, '8–12', '90 s', 'RIR 1 (harder variation than Tue)', 'Feet elevated or backpack on chest once 12 reps is easy.'),
-        ex('Close-grip Push-up', 4, '8–15', '90 s', 'RIR 1–2', 'Hands under shoulders, elbows brush ribs — triceps focus.'),
-        ex('Backpack Bent-over Row', 3, '10–15', '75 s', 'Loaded backpack', 'Hinge to ~45°, pull bag to belly button.'),
-        ex('Decline Push-up', 3, '8–15', '75 s', 'RIR 1–2', 'Feet on chair — upper chest & shoulders.'),
-        ex('Backpack Curl', 3, '12–15', '60 s', 'Loaded backpack', 'Hold by the top handle/straps, slow lowering.'),
-        ex('Prone Y-T-W Raise', 2, '10', '45 s', 'Bodyweight', 'Each letter. Thumbs up, squeeze upper back. Posture & shoulder health.'),
+      { dow: 2, name: 'Tue – Strength A: Squat + Push', exercises: [
+        ex('Pogo Hops', 3, '20', '60 s', 'Bodyweight', 'First, while fresh. Small, quick, stiff ankles: tendon prep for running. Skip if shins are sore.'),
+        ex('Bulgarian Split Squat', 4, '8–12', '90 s', 'RIR 2 (backpack when >15 reps)', 'Rear foot on a bed or chair. Reps are per leg. Leave 2 in the tank: the mission is tomorrow.'),
+        ex('Push-up', 4, '8–15', '90 s', 'RIR 1–2', 'Ladder: incline → standard → feet-elevated → deficit (hands on books) → archer.'),
+        ex('Step-up', 3, '10', '60 s', 'Backpack', 'Per leg. Knee-height chair or stair, drive through the front heel, no push-off from the back leg.'),
+        ex('Pike Push-up', 3, '6–12', '90 s', 'RIR 2', 'Hips high, head to a spot in front of your hands. Harder: feet on a chair.'),
+        ex('Hollow Body Hold', 3, '20s', '45 s', 'Bodyweight', 'Low back glued to the floor. Bend your knees if it lifts.'),
       ]},
       { dow: 3, name: 'Wed – HYBRID MISSION (race sim)', exercises: [
         run('Mission Circuit', ['4 rounds', '5 rounds', '6 rounds', '4 rounds (easy)', '7 rounds', '8 rounds — FOR TIME'], 'Steady, RPE 6–7 (Wk6 race effort)',
-          'Each round = 400m run (~2–3 min) + next station in order: 1) 10 burpee broad jumps 2) 20 walking lunges (backpack) 3) 30 m bear crawl 4) 15 push-ups 5) 15 backpack squat-to-press 6) 20 mountain climbers/side 7) 60 s backpack carry 8) 20 sit-ups. Log TOTAL minutes — beat it next week.'),
-        ex('Plank', 2, '45s', '45 s', 'Bodyweight', 'Cool-down core. Then 5 min walk.'),
+          'Each round = 400 m run (~2–3 min) + next station in order: 1) 10 burpee broad jumps 2) 20 walking lunges (backpack) 3) 30 m bear crawl 4) 15 push-ups 5) 15 backpack squat-to-press 6) 20 mountain climbers/side 7) 60 s backpack carry 8) 20 sit-ups. Log TOTAL minutes and beat it next week. This is the week\'s only hard session: keep it controlled until week 6.'),
+        ex('Plank', 2, '45s', '45 s', 'Bodyweight', 'Cool-down core. Then a 5 min walk.'),
+      ]},
+      { dow: 4, name: 'Thu – Strength B: Pull + Push (upper only)', exercises: [
+        ex('Inverted Table Row', 4, '8–12', '90 s', 'RIR 1', 'Lie under a sturdy table, grip the edge, body straight. Ladder: knees bent → legs straight → feet on a chair → backpack on chest.'),
+        ex('Close-grip Push-up', 4, '8–15', '90 s', 'RIR 1–2', 'Hands under shoulders, elbows brush your ribs: triceps focus.'),
+        ex('Backpack Bent-over Row', 3, '10–15', '75 s', 'Loaded backpack', 'Hinge to ~45°, pull the bag to your belly button.'),
+        ex('Chair Dip', 3, '8–15', '90 s', 'RIR 2', 'Two sturdy chairs or a bed edge. Stop if the front of your shoulder hurts.'),
+        ex('Backpack Curl', 3, '12–15', '60 s', 'Loaded backpack', 'Hold by the top handle or straps, lower slowly.'),
+        ex('Prone Y-T-W Raise', 2, '10', '45 s', 'Bodyweight', 'Each letter. Thumbs up, squeeze your upper back. Posture and shoulder health.'),
+        ex('Side Plank', 3, '30s', '30 s', 'Each side', 'Hips high, straight line. No leg work today: long run tomorrow.'),
       ]},
       { dow: 5, name: 'Fri – Long Run (Endurance Raid)', exercises: [
-        run('Long Easy Run', ['35 min run/walk', '40 min run/walk', '45 min easy', '35 min easy', '50 min easy', '5K TIME TRIAL + 15 min easy'], 'RPE 3–4 (Wk6 trial: hard but even)', 'Slow enough to talk. Water + pinch of salt + lemon after. Walk breaks are allowed, not failure.'),
+        run('Long Easy Run', ['35 min run/walk', '40 min run/walk', '45 min easy', '35 min easy', '50 min easy', '5K TIME TRIAL + 15 min easy'], 'RPE 3–4 (Wk6 trial: hard but even)', 'Slow enough to talk. Water + a pinch of salt + lemon after. Walk breaks are allowed, not failure.'),
         ex('Single-leg Calf Raise', 2, '15–20', '45 s', 'Bodyweight', 'Post-run.'),
+      ]},
+      { dow: 6, name: 'Sat – Strength C: Hinge + Pull + Jumps', exercises: [
+        ex('Squat Jump', 3, '6', '75 s', 'Bodyweight', 'First, while fresh. Jump as high as you can, land softly, reset fully between reps. Power, not cardio.'),
+        ex('Single-leg RDL', 4, '10–12', '75 s', 'Backpack in opposite hand', 'Per leg. Hips square, soft knee, feel the hamstring.'),
+        ex('Sliding Leg Curl', 3, '8–12', '75 s', 'RIR 1–2', 'Socks on tiles or a towel. Bridge up, slide heels out and back. Harder: single leg.'),
+        ex('Reverse Lunge', 3, '10', '75 s', 'Backpack', 'Per leg. Step back, back knee to just above the floor, push through the front heel.'),
+        ex('Single-leg Glute Bridge', 3, '12', '45 s', 'Each side', '2 s squeeze at the top.'),
+        ex('Towel Door Row', 3, '12–15', '60 s', 'RIR 1–2', 'Towel round a door handle (door closed, you on the hinge side). Squeeze your shoulder blades. Today can be your hardest leg day: Sunday is recovery.'),
       ]},
     ],
   };
-
   DEFAULT_PROGRAM.days.sort((a, b) => a.dow - b.dow);
 
   const WEEK_FOCUS = [
     { t: 'Baseline', d: 'Find your level: pick the variation that hits the rep range at RIR 2. Runs are run/walk, so keep them easy.' },
     { t: '+1 Rep', d: 'Same variations as Week 1, add 1 rep to every set. Runs get 5 min longer.' },
-    { t: '+Load', d: 'Harder variation or add backpack weight. First continuous runs.' },
+    { t: '+Load', d: 'Harder variation or add backpack weight. First continuous runs, and your first strides.' },
     { t: 'Deload', d: 'One fewer set, stop 3–4 reps short of failure, shorter runs. Recover and absorb.' },
     { t: 'Volume', d: '+1 set on every strength exercise. Longest runs so far + strides.' },
     { t: 'Performance', d: 'Beat Week 3 on every lift. Wed: 8-round mission for time. Fri: 5K time trial.' },
@@ -123,7 +125,8 @@
   ];
   // Shift wake time gradually (~30 min per week) — abrupt shifts wreck sleep.
   const DEFAULT_WAKE_RAMP = ['08:00', '07:30', '07:00', '07:00', '07:00', '07:00'];
-  const DEFAULT_ROUTINE = `07:00 Wake · 500 ml water + pinch of salt · NO PHONE
+  // Previous default; saves still on it are moved to the new one.
+  const ROUTINE_V1 = `07:00 Wake · 500 ml water + pinch of salt · NO PHONE
 07:05 Outside: 10 min morning sun + 5 min mobility
 07:30 Pre-training fuel: banana + 2 dates (phone still off)
 07:45 TRAINING — today's mission (runs outdoors = more sun)
@@ -138,6 +141,34 @@
 21:30 Shutdown: plan tomorrow's Top 3 MVPs · haldi milk
 22:15 SCREENS OFF → read 20 min
 22:45 Lights out (8 h+ sleep → 07:00)`;
+  // Daily schedule. Lines tagged [run], [strength] or [rest] only show on that kind of day; untagged lines show every day.
+  // Runs stay in the morning (races start in the morning, and it pairs with morning sun); strength moves to late
+  // afternoon, when strength output peaks and the evidence hints at slightly more muscle gain. It still ends 4+ h
+  // before bed, well clear of the 1 h window where hard exercise can hurt sleep.
+  const DEFAULT_ROUTINE = `07:00 Wake: 500 ml water + pinch of salt, NO PHONE
+07:05 Outside: 10 min morning sun + 5 min mobility
+07:30 [run] Pre-run fuel: banana + 2 dates (phone still off)
+07:45 [run] RUN: today's mission, outdoors
+08:45 [run] Shower + protein breakfast
+07:30 [strength] 20 min easy walk outside (more sun, still no phone)
+08:00 [strength] Protein breakfast
+07:30 [rest] Long walk in the morning sun (30–45 min)
+08:30 [rest] Protein breakfast
+09:30 DEEP WORK 90 min: phone in another room, one task only
+11:00 Venture work / calls / email
+13:00 Lunch + 10 min walk
+13:45 Venture work
+16:00 [strength] Pre-lift snack: sattu + peanuts + fruit
+16:30 [run,rest] Snack (sattu + peanuts + fruit)
+17:00 [run,rest] Admin / meetings, evening walk to hit steps
+17:15 [strength] STRENGTH: today's mission (warm up 5 min first)
+18:15 [strength] Shower + 30–40 g protein, then admin / steps
+18:00 [rest] Weekly review + send the coach report
+19:30 Dinner (2.5–3 h before bed)
+21:30 Shutdown: plan tomorrow's Top 3 MVPs, haldi milk
+22:15 SCREENS OFF → read 20 min
+22:45 Lights out (8 h+ sleep → 07:00)`;
+
 
   const blankState = () => ({
     version: 1,
@@ -193,6 +224,8 @@
       Object.keys(oldT).forEach(k => { if (out.targets[k] === oldT[k]) out.targets[k] = b.targets[k]; });
     }
     migrateScheduleV2(out.program);
+    migratePlanV3(out);
+    if (out.routine === ROUTINE_V1) out.routine = DEFAULT_ROUTINE;
     return out;
   }
   /** Block 1 v1 had strength Mon/Wed/Thu and runs Tue/Fri/Sat. Move it to runs Mon/Wed/Fri + strength
@@ -211,6 +244,18 @@
     });
     prog.days.sort((a, b) => a.dow - b.dow);
     prog.id = 'hybrid-bw-v2';
+  }
+  /** Move the built-in v2 plan (one leg day) to v3 (legs twice a week + plyometrics). The old plan is kept in
+   *  programPrev and the player is asked once, so any edits they made can be restored with one tap.
+   *  A coach-imported or custom plan is never touched. */
+  function migratePlanV3(out) {
+    const prog = out.program;
+    if (!prog || prog.id !== 'hybrid-bw-v2' || prog.keep || !Array.isArray(prog.days) || !prog.days.length) return;
+    const V2 = ['Mon – Easy Run', 'Tue – Upper A', 'Wed – HYBRID MISSION', 'Thu – Upper B', 'Fri – Long Run', 'Sat – Lower'];
+    if (!prog.days.every(d => V2.some(n => String(d.name).startsWith(n)))) return;
+    out.programPrev = prog;
+    out.program = JSON.parse(JSON.stringify(DEFAULT_PROGRAM));
+    out.planNotice = 'v3';
   }
   /** touch=false for bookkeeping writes (seen level etc.) that shouldn't count as new data for sync. */
   function save(touch = true) {
@@ -248,6 +293,33 @@
     q.forEach(x => { x.done = x.target > 0 && x.value >= x.target; });
     return q;
   }
+  /** 'run', 'strength' or 'rest': picks which tagged lines of the daily schedule apply. */
+  function dayType(k) {
+    if (!isTrainingDay(k)) return 'rest';
+    const d = S.program.days.find(x => x.dow === parseKey(k).getDay());
+    if (!d || !d.exercises.length) return 'strength';
+    return d.exercises[0].type === 'cardio' ? 'run' : 'strength';
+  }
+  /** Today's schedule: lines for this day type, shifted with the wake-time ramp, in time order. */
+  function routineFor(k) {
+    const toMin = t => { const [h, m] = t.split(':').map(Number); return h * 60 + m; };
+    const toHM = m => { m = ((m % 1440) + 1440) % 1440; return pad(Math.floor(m / 60)) + ':' + pad(m % 60); };
+    const type = dayType(k);
+    let lines = String(S.routine || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean).map(l => {
+      const m = l.match(/^(\d\d:\d\d)\s*(?:\[([a-z,\s]+)\])?\s*(.*)$/i);
+      if (!m) return { t: '', text: l, tags: null };
+      return { t: m[1], text: m[3], tags: m[2] ? m[2].toLowerCase().split(',').map(x => x.trim()) : null };
+    }).filter(x => !x.tags || x.tags.includes(type));
+    // While ramping the wake time, slide the whole day (incl. bedtime) so sleep stays 8 h+.
+    const first = lines.find(x => x.t);
+    const shift = first ? toMin(wakeTime(k)) - toMin(first.t) : 0;
+    if (shift) lines = lines.map(x => (x.t ? { ...x, t: toHM(toMin(x.t) + shift) } : x));
+    lines.sort((a, b) => (a.t && b.t ? toMin(a.t) - toMin(b.t) : 0));
+    return { lines, shift, type };
+  }
+  /** When today's mission is planned, from the schedule line that mentions it. */
+  const missionTime = k => (routineFor(k).lines.find(x => x.t && /today's mission/i.test(x.text)) || {}).t || '';
+
   function todayMission(k) {
     const dow = parseKey(k).getDay();
     const d = S.program.days.find(x => x.dow === dow);
@@ -765,7 +837,7 @@ ${p.notes}
     const grown = Object.values(D.stats).some(v => v !== 10);
     return `
       <section class="panel system mission">
-        <div class="mission-day">Today, ${WEEKDAYS[parseKey(today).getDay()]}${wk >= 1 && wk <= PROGRAM_WEEKS ? `, week ${wk}` : ''}</div>
+        <div class="mission-day">Today, ${WEEKDAYS[parseKey(today).getDay()]}${wk >= 1 && wk <= PROGRAM_WEEKS ? `, week ${wk}` : ''}${(m.kind === 'train' || m.kind === 'draft') && missionTime(today) ? `, planned for ${missionTime(today)}` : ''}</div>
         <h2 class="mission-title">${esc(m.title)}</h2>
         <p class="mission-detail">${esc(m.detail)}</p>
         <div class="mission-foot">
@@ -871,24 +943,17 @@ ${p.notes}
   }
 
   function routinePanel() {
-    const toMin = t => { const [h, m] = t.split(':').map(Number); return h * 60 + m; };
-    const toHM = m => { m = ((m % 1440) + 1440) % 1440; return pad(Math.floor(m / 60)) + ':' + pad(m % 60); };
-    let lines = String(S.routine || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    const today = dkey();
+    const { lines, shift, type } = routineFor(today);
     if (!lines.length) return '';
-    // While ramping the wake time, slide the whole day (incl. bedtime) so sleep stays 8 h+.
-    const first = lines.find(l => /^\d\d:\d\d/.test(l));
-    const shift = first ? toMin(wakeTime(dkey())) - toMin(first.slice(0, 5)) : 0;
-    if (shift) lines = lines.map(l => (/^\d\d:\d\d/.test(l) ? toHM(toMin(l.slice(0, 5)) + shift) + l.slice(5) : l));
     const now = new Date(); const hm = pad(now.getHours()) + ':' + pad(now.getMinutes());
     let cur = -1;
-    lines.forEach((l, i) => { const t = l.slice(0, 5); if (/^\d\d:\d\d$/.test(t) && t <= hm) cur = i; });
-    const wake = wakeTime(dkey());
-    const sunday = new Date().getDay() === 0;
+    lines.forEach((x, i) => { if (x.t && x.t <= hm) cur = i; });
+    const label = { run: 'Run day', strength: 'Strength day', rest: 'Rest day' }[type];
     return `<section class="panel">
-      <h2 class="panel-title">Today's schedule <small>wake by ${wake}</small></h2>
+      <h2 class="panel-title">Today's schedule <small>${label}, wake by ${wakeTime(today)}</small></h2>
       ${shift ? `<p class="small muted lead">Your wake time is still moving earlier, so this week's schedule runs ${Math.abs(shift)} min ${shift > 0 ? 'later' : 'earlier'}, bedtime included, to keep 8 h of sleep.</p>` : ''}
-      ${sunday ? '<p class="small lead">Sunday is a rest day. Take a long walk in the morning sun, review the week and send your coach the report.</p>' : ''}
-      <ol class="timeline">${lines.map((l, i) => `<li class="${i === cur ? 'now' : i < cur ? 'past' : ''}"${i === cur ? ' aria-current="time"' : ''}><span class="num">${esc(l.slice(0, 5))}</span><span>${esc(l.slice(5).trim())}</span></li>`).join('')}</ol>
+      <ol class="timeline">${lines.map((x, i) => `<li class="${i === cur ? 'now' : i < cur ? 'past' : ''}"${i === cur ? ' aria-current="time"' : ''}><span class="num">${esc(x.t)}</span><span>${esc(x.text)}</span></li>`).join('')}</ol>
     </section>`;
   }
 
@@ -1126,7 +1191,7 @@ ${p.notes}
         <p class="small muted">Set calorie/macro targets from your coach's nutrition plan.</p>
         <label class="f"><span>Wake-time ramp, week 1→6 (separate with /)</span><input data-setting="wakeRamp" value="${esc((S.wakeRamp || []).join(' / '))}"></label>
         <label class="f"><span>Routine habits, one per line. Add a stat at the end if you like, e.g. "Read 20 min | INT". {wake} becomes this week's wake time.</span><textarea data-setting="habits" style="min-height:150px">${esc((S.habits || []).map(h => `${h.label} | ${h.stat}`).join('\n'))}</textarea></label>
-        <label class="f"><span>Daily schedule, one line each as "HH:MM what"</span><textarea data-setting="routine" style="min-height:240px">${esc(S.routine || '')}</textarea></label>
+        <label class="f"><span>Daily schedule, one line each as "HH:MM what". Start a line with [run], [strength] or [rest] after the time to show it only on that kind of day; lines without a tag show every day.</span><textarea data-setting="routine" style="min-height:240px">${esc(S.routine || '')}</textarea></label>
         <button class="btn danger sm" data-act="wipe">Erase all data</button>
       </section>`;
   }
@@ -1546,6 +1611,19 @@ Bike Intervals | 1 | 10x30s | — | hard | warm up first | cardio`;
     });
   }
 
+  /** One-time System message after the built-in plan was upgraded, with a one-tap way back. */
+  async function planNotice() {
+    if (S.planNotice !== 'v3') return;
+    const pick = await sys(`<h3>PLAN UPGRADED</h3>
+      <p>Block 1 now follows the hybrid-training research:</p>
+      <p class="small">Legs train <b>twice a week</b> with jumps (Tue squat day, Sat hinge day), because strength plus plyometrics on 2+ days a week is what makes running cheaper. Thursday is upper-body only so your legs are fresh for Friday's long run. Wednesday stays the one hard session.</p>
+      ${S.routine === DEFAULT_ROUTINE ? '<p class="small">Strength days move to <b>late afternoon</b> in your schedule; runs stay in the morning.</p>' : '<p class="small">You\'ve customised your daily schedule, so it wasn\'t changed. The research suggests lifting in the late afternoon and running in the morning; see Settings to tag lines by day type.</p>'}
+      <p class="small muted">Your logs, records and XP are untouched. If you'd edited the old plan, you can bring it back.</p>`,
+      [{ label: 'Restore old plan', value: 'old' }, { label: 'Use new plan', primary: true, value: 'new' }]);
+    if (pick === 'old' && S.programPrev) { S.program = { ...S.programPrev, keep: true }; toast('Old plan restored'); }
+    delete S.planNotice; delete S.programPrev; save(); render();
+  }
+
   // Midnight rollover: refresh quests if the app stays open past midnight.
   let lastDay = dkey();
   setInterval(() => { if (dkey() !== lastDay) { lastDay = dkey(); questDate = lastDay; render(); checkProgressEvents(); } }, 60000);
@@ -1559,7 +1637,7 @@ Bike Intervals | 1 | 10x30s | — | hard | warm up first | cardio`;
   (async () => {
     // Pull newer data from another device before awarding level-ups etc.
     if (SYNC.token && SYNC.gistId && navigator.onLine) await syncPull(false);
-    if (S.onboarded) checkProgressEvents();
+    if (S.onboarded) { planNotice(); checkProgressEvents(); }
     if (SYNC.token && (S.updatedAt || 0) > (SYNC.lastSync || 0)) scheduleSync();
   })();
 })();

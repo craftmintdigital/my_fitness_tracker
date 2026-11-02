@@ -1,5 +1,5 @@
 // Offline cache for AWAKEN. Bump VERSION when files change.
-const VERSION = 'awaken-v6';
+const VERSION = 'awaken-v7';
 const FILES = ['./', './index.html', './styles.css', './app.js', './manifest.webmanifest', './icon.svg',
   './fonts/oxanium-var.woff2', './fonts/atkinson-400.woff2', './fonts/atkinson-700.woff2', './fonts/atkinson-400-italic.woff2'];
 

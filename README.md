@@ -11,7 +11,7 @@ A fitness tracker for your 6-week training and nutrition block that works like a
 | **New Records** | An estimated 1RM (Epley) above your previous best triggers a PR alert and +25 XP. |
 | **Penalty Quest** | Missed yesterday's quests? You get a 20-minute brisk walk worth +20 XP. |
 | **Routine Quests** | Your daily habits (wake time, no-phone, sun, deep work, Top 3 MVPs, reading, screens off), each with its own streak. +10 XP each, +30 for clearing them all. Edit them in Profile and settings → Settings. |
-| **Today's schedule** | Time-blocked day plan with the current block highlighted. During the wake-time ramp (08:00 → 07:30 → 07:00) the whole day shifts with it. |
+| **Today's schedule** | Time-blocked day plan for the kind of day it is (run, strength or rest), with the current block highlighted. During the wake-time ramp (08:00 → 07:30 → 07:00) the whole day shifts with it. Today's mission on Status shows when it's planned. |
 | **Stats** | STR (sets), END (cardio), AGI (steps/mobility), VIT (sleep/nutrition), DIS (clears, habits), INT (deep work, planning, reading). |
 | **Levels & Ranks** | E → D (Lv10) → C (Lv20) → B (Lv35) → A (Lv50) → S (Lv70). A consistent 6-week block lands around C-rank. |
 | **Pain flag** | If you log pain, the app tells you to pause that movement and get it reviewed. |
@@ -19,19 +19,37 @@ A fitness tracker for your 6-week training and nutrition block that works like a
 XP and stats are worked out again from your logs every time, so editing or deleting a workout never double-counts.
 
 ## Built-in plan: Hybrid Athlete Block 1 (bodyweight only, no gym)
-Runs on Mon / Wed / Fri, strength on Tue / Thu / Sat. The upper-body days sit between runs so your legs recover. The leg day is on Saturday, so it never takes the edge off the Wednesday mission or the Friday long run, and Sunday's rest follows it.
+Runs on Mon / Wed / Fri, strength on Tue / Thu / Sat, recovery on Sunday.
 
-| Day | Mission |
-|---|---|
-| Mon | Easy run + runner armour (calves, tibialis, core) |
-| Tue | Upper A: push focus (push-ups, table rows, pike push-ups, dips) |
-| Wed | **Hybrid Mission**: 400 m run + station rounds, logged for time (4 → 8 rounds) |
-| Thu | Upper B: pull focus (rows, backpack rows/curls, close-grip & decline push-ups) |
-| Fri | Long easy run (35 → 50 min, week 6 = 5K time trial) |
-| Sat | Lower: Bulgarian split squats, single-leg RDL, sliding leg curls, step-ups, pogo hops |
-| Sun | Active recovery: walk + mobility (rest-day quest) |
+| Day | When | Mission |
+|---|---|---|
+| Mon | Morning | **Easy run** (25 → 35 min) + strides from week 3, then calves, tibialis, dead bugs |
+| Tue | Late afternoon | **Strength A: squat + push**. Pogo hops, Bulgarian split squats, push-ups, step-ups, pike push-ups, hollow hold |
+| Wed | Morning | **Hybrid Mission**: 400 m run + station rounds, logged for time (4 → 8 rounds). The week's only hard session |
+| Thu | Late afternoon | **Strength B: pull + push, upper only**. Table rows, close-grip push-ups, backpack rows, dips, curls, Y-T-W, side plank |
+| Fri | Morning | **Long easy run** (35 → 50 min, week 6 = 5K time trial) |
+| Sat | Late afternoon | **Strength C: hinge + pull + jumps**. Squat jumps, single-leg RDLs, sliding leg curls, reverse lunges, glute bridges, door rows |
+| Sun | Morning | Active recovery: long walk + mobility, weekly review, send the coach report |
 
-Saves on the old schedule move to this one automatically, and any edits you made to exercises are kept. A plan you imported from your coach is never reshuffled.
+When you open the app on the built-in plan from before, the System tells you about the upgrade once and offers **Restore old plan** in case you'd edited it. Your logs, records and XP are never touched, and a plan imported from your coach is never replaced.
+
+### Why the plan looks like this
+- **Legs train twice a week, with jumps.** In the research on runners, plyometrics alone barely changed running economy. Plyometrics combined with strength work had a large effect, and more than 2 sessions a week did better ([Kinesiology, 2023](https://hrcak.srce.hr/en/309864)). The old plan trained legs once.
+- **Weekly sets matter more than the split.** Volume-matched studies find similar growth whether a muscle is trained once or several times a week, and training it about twice a week is an easy way to get to ~10+ hard sets (Schoenfeld et al. 2019 meta-analysis; see also this [review of the evidence](https://ro.ecu.edu.au/ecuworkspost2013/5665)). Each muscle group now gets two sessions.
+- **Bodyweight is enough if you push close to failure.** Light and heavy loads build the same muscle when sets go near failure; heavy loads mainly add maximal strength ([Schoenfeld et al. 2017](https://pubmed.ncbi.nlm.nih.gov/28834797/)). That's why the last set of each exercise goes to 1 rep short.
+- **Running gets in the way of lifting more than cycling does**, especially when there's a lot of it (Wilson et al. 2012 meta-analysis, *J Strength Cond Res*). So runs and leg sessions are on different days, and Thursday has no leg work before Friday's long run.
+- **Mostly easy, one hard day.** For recreational athletes, polarized (80/20) and pyramidal intensity mixes work about equally well, and both beat lots of threshold work (2024 *Sports Medicine* network meta-analysis; [2018 systematic review](https://pubmed.ncbi.nlm.nih.gov/29182410/)). Mon and Fri stay conversational; Wednesday is the only session meant to hurt.
+- **Run time grows slowly.** In novice runners, increasing weekly distance by more than 30% was linked to more injuries than increasing it by under 10% (not quite statistically significant) ([Nielsen et al. 2014](https://vbn.aau.dk/ws/files/284775170/e000333.full.pdf)). Week-to-week jumps here stay well under 30%, with a deload in week 4.
+- **One race-style session a week** is also what HYROX athletes and coaches recommend, with the rest of the week on strength and running ([Red Bull, HYROX pros](https://www.redbull.com/ie-en/hyrox-pros-running-lifting-training-tips)).
+
+### Morning or evening?
+- **There's no clear winner.** A 2023 meta-analysis found no evidence that one time of day is better overall. It did find bigger gains when you train at the time you'll be tested or race ([Bruggisser et al. 2023](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10198889/)).
+- **Evening strength may build a little more muscle over time.** In a 24-week study of combined strength and endurance training, the evening groups gained more muscle in weeks 13–24, though not in the first 12 ([Küüsmaa et al. 2016](https://pubmed.ncbi.nlm.nih.gov/27863207/)).
+- **Evening training doesn't hurt sleep**, unless it's vigorous and ends within about an hour of bedtime ([Stutz et al. 2019](https://pubmed.ncbi.nlm.nih.gov/30374942/)).
+
+So the schedule splits it: **runs stay in the morning** (marathons and most races start then, and runs pair with your morning sun habit) and **strength moves to 17:15**, ending around 18:15, more than 4 hours before bed. The bigger factor is consistency. If evening lifting keeps getting squeezed out by work, move it back to the morning in Settings; that beats skipping it.
+
+The daily schedule changes with the day: lines tagged `[run]`, `[strength]` or `[rest]` only show on that kind of day. A schedule you've edited yourself isn't replaced; add the tags to your own lines if you want them.
 
 Daily step target ramps 7,000 → 8,500 → 10,000.
 
